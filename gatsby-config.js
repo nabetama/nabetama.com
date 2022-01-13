@@ -1,14 +1,14 @@
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Starter Blog`,
+    title: `blog.nabetama.com`,
     author: {
-      name: `Kyle Mathews`,
-      summary: `who lives and works in San Francisco building useful things.`,
+      name: `nabetama`,
+      summary: `日記`,
     },
-    description: `A starter blog demonstrating what Gatsby can do.`,
-    siteUrl: `https://gatsbystarterblogsource.gatsbyjs.io/`,
+    description: `ただの日記`,
+    siteUrl: `https://blog.nabetama.com`,
     social: {
-      twitter: `kylemathews`,
+      twitter: `nabetama`,
     },
   },
   plugins: [
@@ -46,6 +46,7 @@ module.exports = {
           `gatsby-remark-prismjs`,
           `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
+          `@weknow/gatsby-remark-twitter`,
         ],
       },
     },
