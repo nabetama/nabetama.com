@@ -21,6 +21,8 @@ slug: >-
 
 このストレッチをした後、スクワットと懸垂をしてから走るようにしている。ランニング後のストレッチも同じチャンネルの動画の通りにやっている。ふくらはぎの筋肉は2種類あり、ストレッチも2種類あったのに驚いた。
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Zl-7uNIrp2k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ヨガマット代わりに子供の騒音マットが敷きっぱなしになっているのを利用してそこでこのストレッチを行っている。部活動をしていた頃はストレッチなんてどうでもいいと思っていたが、この年になってからやるストレッチは格別に気持ちが良い。
 
 実際のランの方はというと、6.7km走って、6分/kmを切るラップを継続して出すことが出来た。少しは成長しているようだ。まだランニング始めてから１ヶ月も経ってないので何も判断できないところがシブい。焦らずにやっていきたい。

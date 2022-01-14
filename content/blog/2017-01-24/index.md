@@ -29,4 +29,4 @@ slug: /@nabetama/%E7%8A%AC%E3%81%8C%E6%AD%BB%E3%82%93%E3%81%A0-2880974f9d09
 
 さようなら。ラペ。ありがとう。
 
-![img.png](img.png)
+![](1.jpg)

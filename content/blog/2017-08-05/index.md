@@ -9,8 +9,8 @@ slug: >-
   /@nabetama/kinesis-advantage2%E3%81%A8ergodox-ez%E3%81%A8%E3%81%AE%E6%AF%94%E8%BC%83-86c2e1948011
 ---
 
-![img.png](img.png)
-![img_1.png](img_1.png)
+![](1.jpg)
+![](2.jpg)
 
 友人の家に遊びに行ったら何やら黒い塊が転がっていた。買ったはいいけど全く使ってないとのことだったので借りてきた。欲しかったら値段提示してくれれば売ってやるって言われたので1ヶ月くらい使ってみて考えようと思ってたんだけど、今日2,3時間タイピングしてたら想像以上に使いやすかったのでおそらく買う。
 
@@ -53,5 +53,7 @@ _qmk\_firmware - keyboard controller firmware for Atmel AVR USB family_github.co
 ### 今後
 
 会社ではErgodox Ez, 自宅はKinesisという環境になったので上記で課題としても上げているkeymapの見直しはやっていきたい。今まで自宅で使っていたHHKB Professional 無刻印 墨は売れたら助かるのでとりあえずヤフオクにでも出してみる。箱あったかな。
+
+<blockquote class="twitter-tweet"><p lang="ja" dir="ltr">これオークション出そうかな <a href="https://t.co/VzI1VGERY9">pic.twitter.com/VzI1VGERY9</a></p>&mdash; nabetama (@nabetama) <a href="https://twitter.com/nabetama/status/893834864650207236?ref_src=twsrc%5Etfw">August 5, 2017</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ※所要時間7秒

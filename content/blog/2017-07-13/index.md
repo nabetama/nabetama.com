@@ -19,7 +19,7 @@ Karabiner-ElementsはGUIでポチポチするだけでプラグイン的に設�
 [**_Karabiner-Elements complex\_modifications rules_**  
 Karabiner-Elements complex\_modifications rulespqrs.org](https://pqrs.org/osx/karabiner/complex_modifications/ "https://pqrs.org/osx/karabiner/complex_modifications/")[](https://pqrs.org/osx/karabiner/complex_modifications/)
 
-![img.png](img.png)
+![](1.jpg)
 
 わー！わー！
 

@@ -20,7 +20,7 @@ slug: /@nabetama/%E8%BF%91%E6%B3%81-ca9ece11aeee
 
 ### HyperDrive Thunderbolt 3 USB-C Hub for MacBook Pro
 
-![img.png](img.png)
+![](1.jpg)
 
 こんなにサポートしてくれるし、デザインも他に比べればマシだし、まさに求めていたようなハブ。こいつをindiegogoでcontributionしているんだけど！まだ！届かない！発送連絡も無い。4月中旬って言ってたのに…。
 
@@ -28,4 +28,4 @@ slug: /@nabetama/%E8%BF%91%E6%B3%81-ca9ece11aeee
 
 体温と外気の温度差で金属に走る電流によって充電するスマートウォッチ。少し欲しいなと思った。GPSはついてないっぽいがおそらくは時計の振れ幅？で移動距離を測定できる。でもGPSほしいよなーやっぱり。
 
-![img_1.png](img_1.png)
+![](2.jpg)
