@@ -27,6 +27,7 @@ Hugoではなく、werckerの使い方が古い。
 Applicationを作ったら画面右上にあるManage Workflowsへ
 
 ![img.png](img.png)
+
 左カラムのWorkflowsをクリック。たぶん`build`しかないと思う。
 
 #### Add new pipeline
