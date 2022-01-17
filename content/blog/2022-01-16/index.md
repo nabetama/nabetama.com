@@ -34,7 +34,6 @@ medium の記事は幸い（？）たいした量ではなかったので、[set
 ## Twitter のカードUI
 
 Twitter のカードUIに対応するため、[@weknow/gatsby-remark-twitter](https://www.gatsbyjs.com/plugins/@weknow/gatsby-remark-twitter/)を入れた。
-
 gatsby-config.js に1行追加するだけで良い。
 
 ```js
