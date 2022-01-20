@@ -13,4 +13,3 @@ imgur に画像をアップロード後、生成された `Markdown Link` をコ
 デフォルトだとサイズが大きすぎるので、`Large Thumbnail`を選択している。
 
 ![2歳の息子とほぼ毎日遊んでいる新幹線のパズル](https://i.imgur.com/dtg4wtFl.jpg)
-
