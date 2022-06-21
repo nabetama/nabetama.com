@@ -11,7 +11,7 @@ date: '2022-06-18T18:03:00.127Z'
 非常に良い。45分ほど立って練習したが快適だった。レッスン時にお借りした [バードストラップ](https://amzn.to/3xxVDBW) も十分に快適だったが、
 ストラップ幅が小さいブレステイキングのほうが好み。
 
-## 構造とそれぞれ良いと感じた点
+## 構造
 
 ![Imgur](https://i.imgur.com/MYNmOtsl.jpg)
 ※ 画像は https://www.breathtaking.jp/product/saxophone/ より
