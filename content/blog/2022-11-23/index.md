@@ -33,7 +33,7 @@ vite と @crxjs/vite-plugin を使って作っていく。
 
 ### vite は 2 系を使う
 
-2022/11/23 現在、CRXJS は vite@^3 に対応していないため、手順通りに `vite@^2` をインストールしないとビルドできないので注意。
+2022/11/23 現在、CRXJS は vite@^3 に対応していない。手順通りに `vite@^2` をインストールしないとビルドできないので注意。
 
 > CRXJS doesn't yet work with Vite 3, but support is coming soon!
 
