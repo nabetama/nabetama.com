@@ -1,0 +1,157 @@
+---
+title: Swift のトレイリングクロージャについて
+date: "2023-10-24T18:11:00.127Z"
+---
+
+# トレイリングクロージャとは
+
+## tl;dr
+
+- 関数呼び出し時にクロージャを使用する際の特定のシンタックスのこと
+- 引数の末尾がクロージャであるとき、そのクロージャは外に出すことができる。これがトレイリングクロージャ
+
+## 例
+
+```swift
+func foo(param1: Int, param2: (_ arg: Int) -> Void) {
+    param2(param1)
+}
+
+// クロージャを引数に渡す
+foo(param1: 42, param2: { x in
+    print(x)
+})
+
+// トレイリングクロージャを使う
+foo(param1: 42) { x in
+    print(x)
+}
+```
+
+複数のトレイリングクロージャがあるとき。2番目の引数名 `param2:` を省略して書くことができる。
+
+```swift
+func foo(param1: Int, param2: (_ arg: Int) -> Void, param3: () -> Void) {
+    param2(param1)
+    param3()
+}
+
+foo(param1: 42) { x in
+    print(x)
+} param3: {
+    print("Exit")
+}
+```
+
+SwiftUI を書いていると UI を構築する `struct` のイニシャライザを呼び出すときにトレイリングクロージャを使っていることがわかる。
+
+```swift
+NavigationSplitView {
+    Text("Hello, World!")
+        .navigationTitle("Featured")
+    } detail: {
+        Text("Select a Landmark")
+    }
+```
+
+`NavigationSplitView` のイニシャライザは以下のように実装されており、クロージャを受け取っていることがわかる。
+
+```swift
+public init(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Content == EmptyView
+```
+
+`List` の場合
+
+```swift
+public init(@ViewBuilder content: () -> Content)
+```
+
+`Toggle` の場合
+
+```swift
+init(isOn: Binding<Bool>, @ViewBuilder label: () -> Label)
+```
+
+## カンマの省略
+
+複数のトレイリングクロージャを書くときに引数を区切るカンマ `,` は省略して書くことができる。これは [Multiple Trailing Closures](https://github.com/apple/swift-evolution/blob/main/proposals/0279-multiple-trailing-closures.md#multiple-trailing-closures)という仕様だ。
+
+```swift
+func printDoubled(arg1: (_ x: Int) -> Int, double: (_ y: Int) -> Int, print: (_ z: Int) -> Void) {
+    print(double(arg1(2)))
+}
+
+printDoubled { x in
+    x
+} double: { y in
+    y * 2
+} print: { z in
+    print(z)
+}
+```
+
+## Swift のクロージャ
+
+[Swift のドキュメント](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures)を読むとクロージャには大きく分けて3種類あると記載されている。
+
+> - Global functions are closures that have a name and don’t capture any values.
+> - Nested functions are closures that have a name and can capture values from their enclosing function.
+> - Closure expressions are unnamed closures written in a lightweight syntax that can capture values from their surrounding context.
+
+それぞれの関数がどう変数を[キャプチャ](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures#Capturing-Values)するかについても記載されている。
+
+- グローバル関数。あらゆる値をキャプチャできる
+- ネストされた関数。クロージャを囲む関数の中の変数はキャプチャできる
+- 無名関数。コンテキストからキャプチャできる
+
+### 無名関数のコンテキスト
+
+```swift
+let names = ["Chris", "Alex", "Ewa", "Barry", "Daniella"]
+
+func backward(_ s1: String, _ s2: String) -> Bool {
+    return s1 > s2
+}
+var reversedNames = names.sorted(by: backward)
+// reversedNames is equal to ["Ewa", "Daniella", "Chris", "Barry", "Alex"]
+```
+
+上記の例では、`names.sorted(by: backward)` の実行時のスコープと理解している。backward は定義時点では何もキャプチャしていない。実行されたときに引数として受け取った `s1`, `s2` をキャプチャする。
+
+さきほどの例を無名関数で書くと以下のようになる。
+
+```swift
+let reversedNames = names.sorted(by: { (s1: String, s2: String) -> Bool in
+    return s1 > s2
+})
+```
+
+### return の省略
+
+なおクロージャの実装が単一式であった場合 `return` は省略できるので以下のように記述できる。
+
+```swift
+reversedNames = names.sorted(by: { s1, s2 in s1 > s2 } )
+```
+
+SwiftUI を見ても `return` は基本的に省略されている。なれるしか無い。
+
+### $0, $1, ...
+
+さらに、実引数は順番によって `$0, $1, ...` のように暗黙的な名前で取得できるため以下のように記述できる.
+
+```swift
+reversedNames = names.sorted(by: { $0 > $1 } )
+```
+
+`$0`, `$1` が参照しているのは、クロージャの1番目と2番目の `String` 型の引数である。
+
+### コンパイラ賢い
+
+なんと更に短く記述できる方法がある。
+
+```swift
+reversedNames = names.sorted(by: >)
+```
+
+これはSwiftの `String` 型には、引数に2つの `String` 型のパラメータを渡す `>` オペレータが実装されているからだ。Swift のコンパイラが推測してくれる。
