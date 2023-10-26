@@ -16,6 +16,16 @@ module.exports = {
     `gatsby-plugin-image`,
     `gatsby-plugin-netlify`,
     {
+      resolve: `gatsby-plugin-netlify`,
+      options: {
+        headers: {
+          "/static/*": ["Cache-Control: public, max-age=31536000, immutable"],
+          "/**/*.js": ["Cache-Control: public, max-age=31536000, immutable"],
+          "/**/*.css": ["Cache-Control: public, max-age=31536000, immutable"],
+        }
+      }
+    },
+    {
       resolve: `gatsby-source-filesystem`,
       options: {
         path: `${__dirname}/content/blog`,
