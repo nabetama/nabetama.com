@@ -5,7 +5,6 @@ date: "2023-11-10T18:11:00.127Z"
 
 ULYSSES の スプートニクを購入した。カラーはブラウン。
 
-![](https://i.imgur.com/bF0fYZjl.jpg)
 ![スプートニク](https://i.imgur.com/bF0fYZjl.jpg)
 
 [ULYSSES公式](https://ulysses.jp/?pid=147872003)にて購入。
