@@ -12,6 +12,7 @@ module.exports = {
     },
   },
   plugins: [
+    `gatsby-plugin-sitemap`,
     `gatsby-plugin-image`,
     `gatsby-plugin-netlify`,
     {
@@ -27,60 +28,6 @@ module.exports = {
         host: 'https://blog.nabetama.com',
         sitemap: 'https://blog.nabetama.com/sitemap-index.xml',
         policy: [{userAgent: '*', allow: '/'}]
-      }
-    },
-    {
-      resolve: `gatsby-plugin-sitemap`,
-      options: {
-        query: `
-        {
-          site {
-            siteMetadata {
-              siteUrl
-            }
-          }
-          allSitePage(filter: {context: {draft: {ne: true}}}) {
-            nodes {
-              path
-            }
-          }
-          allContentfulBlogPost (filter: { node_locale: { eq: "ja-JP" }, published: { eq: true } }) {
-            edges {
-              node {
-                slug
-                updatedAt
-              }
-            }
-          }
-          allSitePage {
-            nodes {
-              path
-            }
-          }
-        }
-        `,
-        resolveSiteUrl: () => siteUrl,
-        resolvePages: ({
-          allSitePage: { nodes: allPages },
-          allWpContentNode: { nodes: allWpNodes },
-        }) => {
-          const wpNodeMap = allWpNodes.reduce((acc, node) => {
-            const { uri } = node
-            acc[uri] = node
-
-            return acc
-          }, {})
-
-          return allPages.map(page => {
-            return { ...page, ...wpNodeMap[page.path] }
-          })
-        },
-        serialize: ({ path, modifiedGmt }) => {
-          return {
-            url: path,
-            lastmod: modifiedGmt,
-          }
-        },
       }
     },
     {
