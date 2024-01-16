@@ -1,4 +1,5 @@
 import { allPosts } from "contentlayer/generated";
+import { compareDesc } from "date-fns";
 import Link from "next/link";
 
 const formatDate = (inputDate: string) => {
@@ -19,9 +20,13 @@ const formatDate = (inputDate: string) => {
 };
 
 export default function Home() {
+  const posts = allPosts.sort((a, b) =>
+    compareDesc(new Date(a.date), new Date(b.date))
+  );
+
   return (
     <div className="prose dark:prose-invert">
-      {allPosts.reverse().map((post) => (
+      {posts.map((post) => (
         <article className="mt-10" key={post._id}>
           <time
             className="text-gray-400 no-underline mt-3 p-0 block text-[.8rem]"
