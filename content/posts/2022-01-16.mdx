@@ -1,0 +1,64 @@
+---
+title: medium + Route53 から gatsby cloud + Route53 に変更した。
+description: medium + Route53 から gatsby-starter-blog , gatsby cloud, Route53 に変更した。
+date: "2022-01-16T23:27:14.128Z"
+---
+
+## やったこと
+
+- [gatsby-starter-blog](https://www.gatsbyjs.com/starters/gatsbyjs/gatsby-starter-blog)を clone して編集
+- github に push
+- gatsby-cloud でホスティング
+- DNS 反映
+
+gatsby-cloud でのホスティング方法は公式ドキュメントや gatsby-starter-blog の REAMDE にも書かれているのでそれに沿って進める。
+
+## gatsby-starter-blog
+
+- [gatsby-starter-blog](https://www.gatsbyjs.com/starters/gatsbyjs/gatsby-starter-blog)をローカルに clone
+- gatsby-config.js を編集
+- CSS をお気持ち程度に変更
+
+## medium からの Export
+
+medium の記事は幸い（？）たいした量ではなかったので、[settings](https://medium.com/me/settings)の
+「Download your information」からダウンロードした。
+実行してしばらくすると「Medium download request」という件名のメールが送られてくるので、記載されたリンクから 24h 以内にダウンロードすれば良い。
+
+## medium の記事を markdown に変換する
+
+[medium-2-md](https://github.com/gautamdhameja/medium-2-md) を利用して markdown に変換した。
+
+## Twitter のカード UI
+
+Twitter のカード UI に対応するため、[@weknow/gatsby-remark-twitter](https://www.gatsbyjs.com/plugins/@weknow/gatsby-remark-twitter/)を入れた。
+gatsby-config.js に 1 行追加するだけで良い。
+
+```js
+plugins: [
+  {
+    resolve: "gatsby-transformer-remark",
+    options: {
+      plugins: ["@weknow/gatsby-remark-twitter"], // Add
+    },
+  },
+];
+```
+
+## DNS 設定
+
+ほぼ [Adding a Custom Domain](https://support.gatsbyjs.com/hc/en-us/articles/360063469873-Adding-a-Custom-Domain)の通り。
+
+    In the Please enter a domain field, add one of the following:
+    * your apex or root domain (this is your custom domain without the www. part, e.g. mysite.com)
+    * your subdomain (e.g., www.mysite.com or store.mysite.com)
+
+と書かれている通り、apex または root ドメインであれば A レコード, サブドメインであれば CNAME として設定する。
+
+![Route53の設定](1.jpg)
+
+今回は apex ドメインではなくて、サブドメインなので CNAME レコードを設定している。
+
+## やりたいこと
+
+画像は別の場所にアップロードし、url で参照するようにしたい（リポジトリにバイナリを push したくない）。

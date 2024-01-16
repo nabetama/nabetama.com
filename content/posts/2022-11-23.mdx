@@ -1,0 +1,280 @@
+---
+title: Chrome 拡張 作り方
+date: "2022-11-23T18:11:00.127Z"
+---
+
+## tl;dr
+
+- `npm init vite@^2`
+- `npm i @crxjs/vite-plugin -D`
+- JS を書く
+
+## 作りたいもの
+
+タイプした単語（英数字のみ）が特定の単語にマッチした場合に警告する拡張を作る。
+
+## 参考にした記事
+
+まずは公式。
+
+[Welcome - Chrome Developers](https://developer.chrome.com/docs/extensions/mv3/getstarted/)
+
+さっと眺めてみたが、全くの初心者がこれをすべて読んでから開発を始めるのは厳しい。あまりにも時間がかかりすぎる。
+なので、作りながらトライ・アンド・エラーを繰り返すことにした。必要な設定だったり副作用、制限などなどを把握するために適宜参照することになる。
+
+[Create a Vite-React Chrome Extension in 90 seconds - DEV Community](https://dev.to/jacksteamdev/create-a-vite-react-chrome-extension-in-90-seconds-3df7)
+
+記事は 2021 年 12 月のものだが、紹介されている手順で全く問題なく作れる。
+vite と @crxjs/vite-plugin を使って作っていく。
+
+開発中の chrome 拡張は手でドラッグ・アンド・ドロップしてインストールするが、vite は hmr をサポートしており、インクリメンタルに開発できるのが良い。Chrome の developer tools でブレークポイントを仕掛けてのでバッグもできて DX も良い。
+
+また最初から react で書くことができるのもありがたい。
+
+### vite は 2 系を使う
+
+2022/11/23 現在、CRXJS は vite@^3 に対応していない。手順通りに `vite@^2` をインストールしないとビルドできないので注意。
+
+> CRXJS doesn't yet work with Vite 3, but support is coming soon!
+
+### CRXJS とは
+
+https://github.com/crxjs/chrome-extension-tools/tree/main/packages/vite-plugin
+
+Chrome Extension を作るためのツール。
+
+## 手順
+
+基本的には先に紹介した記事の手順に沿ってやっていく。
+
+### vite のインストール
+
+```sh
+$ npm init vite@^2
+
+Need to install the following packages:
+  create-vite@^2
+Ok to proceed? (y) y
+✔ Project name: … eatinc
+✔ Select a framework: › react
+✔ Select a variant: › react-ts
+
+Scaffolding project in /Users/nabetama/src/github.com/nabetama/eatinc...
+
+Done. Now run:
+
+  cd eatinc
+  npm install
+  npm run dev
+```
+
+案内されたとおりに、npm package をインストールする。
+
+```sh
+$ cd eatinc
+$ npm install
+```
+
+### crxjs/vite-plugin のインストール
+
+```sh
+$ npm i @crxjs/vite-plugin -D
+```
+
+ここまでやると以下のようなファイル構成になるはず。
+
+```sh
+$ git status
+On branch main
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .gitignore
+        index.html
+        package-lock.json
+        package.json
+        src/
+        tsconfig.json
+        tsconfig.node.json
+        vite.config.ts
+```
+
+## @types/chrome 入れる
+
+chrome の型定義ファイルを入れないと、tsc 怒られるので入れる。
+
+```sh
+$ npm i -D @types/chrome
+```
+
+## prettier 入れておく
+
+スタイルをめぐる継続的な論争を引き起こさないよう、prettier を入れておく。
+
+[公式](https://prettier.io/docs/en/install.html)参照.
+
+## vite の設定と manifest.json を書く
+
+manifest.json
+
+```json
+{
+  "manifest_version": 3,
+  "name": "eatinc",
+  "version": "0.0.1",
+  "action": { "default_popup": "index.html" }
+}
+```
+
+vite.config.ts
+
+```ts
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import { crx } from "@crxjs/vite-plugin"
+
+import manifest from "./manifest.json" assert { type: "json" }
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react(), crx({ manifest })],
+}
+```
+
+## ビルドしてみる
+
+この時点で一度 `npm run dev` してみる。
+
+```sh
+$ npm run dev
+
+> eatinc@0.0.0 dev
+> vite
+
+
+  vite v2.9.15 dev server running at:
+
+  > Local: http://localhost:3000/
+  > Network: use `--host` to expose
+
+  ready in 341ms.
+
+11:04:17 AM [crx] files start dist
+11:04:17 AM [crx] files ready in 166ms
+```
+
+こんな感じでサーバーが立ち上がり、`/dist` 以下にファイルが作られているはず。
+
+```sh
+$ pwd
+/Users/nabetama/src/github.com/nabetama/eatinc
+$ la dist
+total 24
+drwxr-xr-x  17 nabetama  staff  544 Nov 23 11:04 ../
+-rw-r--r--   1 nabetama  staff  216 Nov 23 11:04 manifest.json
+-rw-r--r--   1 nabetama  staff   91 Nov 23 11:04 service-worker-loader.js
+drwxr-xr-x   8 nabetama  staff  256 Nov 23 11:04 ./
+-rw-r--r--   1 nabetama  staff  389 Nov 23 11:04 index.html
+drwxr-xr-x   3 nabetama  staff   96 Nov 23 11:04 node_modules/
+drwxr-xr-x   3 nabetama  staff   96 Nov 23 11:04 vendor/
+drwxr-xr-x   6 nabetama  staff  192 Nov 23 11:04 assets/
+```
+
+[先に紹介した記事](https://dev.to/jacksteamdev/create-a-vite-react-chrome-extension-in-90-seconds-3df7)の通り、chrome にインストールしてみる。
+
+[chrome://extensions/](chrome://extensions/) を開き、右上の「デベロッパーモード」をアクティブにし、作成された dist ディレクトリをドラッグ・アンド・ドロップすればインストールできる。
+
+![](https://i.imgur.com/VcC6tvJm.png)
+
+ブラウザに拡張のアイコンを表示させ、クリックすると http://localhost:3000 と同じ内容が表示される。
+
+![](https://i.imgur.com/kRpY2nrm.png)
+
+これで動作確認は OK.
+
+基本的に `npm run dev` しておけば良い。コードを更新すればブラウザにインストールした拡張にも反映される（[What is CRXJS](https://crxjs.dev/vite-plugin)）。
+
+## keypress イベントを監視する JS を書く
+
+[https://github.com/nabetama/eatinc/blob/main/src/handler/keyEventHandler.ts](https://github.com/nabetama/eatinc/blob/main/src/handler/keyEventHandler.ts)
+
+- 入力した文字列を N 文字保持する
+- N 文字の中に特定の単語 W が含まれていた場合に alert を出す
+- W は複数登録可能
+
+manifest.json を以下のように修正する。
+
+```json
+{
+  "manifest_version": 3,
+  "name": "eatinc",
+  "version": "0.0.5",
+  "action": { "default_popup": "index.html" },
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["*://github.com/"],
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*"],
+      "js": ["src/handler/keyEventHandler.ts"],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "128": "public/128.png"
+  }
+}
+```
+
+どんな設定を追加すれば良いか、全くわからなかったのでトライ・アンド・エラーで試行錯誤した。
+たとえば、`permissions` の `"storage"` は `chrome.storage` を利用するための必須設定だが、これを書かないと、`chrome.storage` が　`undefined` になりアクセスできなかったりする。
+
+Chrome の [manifest のドキュメント](https://developer.chrome.com/docs/extensions/)を適宜参照しつつ、この形に落ち着いた。
+
+## アイコン
+
+アイコン は [icon-mono](https://icooon-mono.com/)から[悪徳警官のアイコン](https://icooon-mono.com/10795-%e6%82%aa%e5%be%b3%e8%ad%a6%e5%ae%98%e3%81%ae%e3%82%a2%e3%82%a4%e3%82%b3%e3%83%b3/)を選んだ。
+
+## 単語登録画面
+
+`chrome.storage.local` に単語を保存するコードを書く。
+
+https://github.com/nabetama/eatinc/blob/main/src/App.tsx
+
+### 画面はどこに用意するのが良さそう…？
+
+Chrome 拡張で設定画面的な UI を作るとなると、以下のいずれかにページを用意するようだった。
+
+- [ブラウザのツールバーでクリックして出すページ](https://developer.chrome.com/docs/extensions/reference/action/)
+- [拡張機能管理ページ](chrome://extensions)からたどり着く[オプションページ](https://developer.chrome.com/docs/extensions/mv2/options/#embedded_options)
+
+正解はなさそうだが最適解もわからないので階層の浅い前者を採用した。`index.html` を書く。
+
+![Imgur](https://i.imgur.com/ED0iVzjm.png)
+
+余談：react たまに書くが、そのたびに知らないことが増え続けている…。
+
+## tips
+
+### デバッグの類
+
+`npm run dev` していれば柔軟なデバッグができる。
+
+#### ポップアップのデバッグ
+
+ツールバーに並んでいる拡張のアイコンをクリックしたときの画面（ポップアップ）をデバッグしたいときがあると思う。
+そういうときは拡張のアイコンを右クリックし、「ポップアップを検証」をクリックすれば Chrome の Developer tools を利用してのデバッグが可能だ。
+ブレークポイントを使うことももちろん可能。
+
+#### バックグラウンドで実行している JS のデバッグ
+
+普通に Chrome Developer tools が使える。
+
+## 完了
+
+長かった。お疲れさまでした。
+
+vite と @crxjs/vite-plugin のおかげで、コードを書くことだけに集中できるのは助かる。
+
+なお、[ストアに公開する場合は Developer 登録料が $5 かかります](https://developer.chrome.com/docs/webstore/register/)。
