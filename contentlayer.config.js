@@ -30,7 +30,7 @@ export const Post = defineDocumentType(() => ({
   fields: {
     title: { type: 'string', required: true },
     date: { type: 'date', required: true },
-    modDate: { type: 'date' },
+    lastModDate: { type: 'date' },
     tags: { type: 'list', of: { type: 'string' } },
     description: {
       type: 'string',

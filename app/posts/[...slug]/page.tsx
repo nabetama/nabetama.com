@@ -56,12 +56,12 @@ export default async function PostPage({ params }: PostProps) {
       >
         公開: {format(new Date(post.date), "yyyy年MM月dd日")}
       </time>
-      {post.modDate && (
+      {post.lastModDate && (
         <time
           className="dark:text-gray-400 no-underline mt-3 ml-3 p-0 inline-block text-[.8rem]"
-          dateTime={post.date}
+          dateTime={post.lastModDate}
         >
-          更新: {format(post.date, "yyyy年MM月dd日")}
+          更新: {format(post.lastModDate, "yyyy年MM月dd日")}
         </time>
       )}
       <h1 className="mb-2 text-3xl text-gray-800 dark:text-gray-100">
