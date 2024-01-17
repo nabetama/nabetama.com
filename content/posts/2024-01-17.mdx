@@ -1,0 +1,72 @@
+---
+title: ウェブサイトを next.js で作り直した
+date: 2024-01-17T00:00:00.000Z
+description: 開発体験が最高
+---
+
+## 今まで
+
+[Gatsby](https://www.gatsbyjs.com/) から [next.js](https://nextjs.org/) に移行した。
+またそれに合わせてウェブサイトのホスティング先も [netlify](https://www.netlify.com/) から [vercel](https://vercel.com/) に移した。
+
+## 移行してみて
+
+![vercelのlogo](https://i.imgur.com/aMiWrZom.png)
+
+vercel が提供する開発体験が非常に良かった。
+
+vercel でホスティングしているので、github 上で main ブランチに `merge commit` があればすぐにデプロイされる。
+vercel でデプロイするためのパッケージやビルドスクリプト等の用意も不要。
+
+## ドメイン設定
+
+![vercelのドメイン設定画面](https://i.imgur.com/hMfWBOzl.png)
+
+netlify から vercel へ移行したことで CNAME も変更した。やることは2つ。
+
+- vercel の設定画面でウェブサイトのドメインを入力する
+- CNAME 変更
+
+上記は順不同で問題ない。
+
+まずvercel の設定画面にて、このウェブサイトのドメインを入力した。当然、その時点では blog.nabetama.com は netlify に向いているので設定できない旨のエラーが表示される。
+次にドメイン事業者にて CNAME を vercel（cname.vercel-dns.com.） へ変更する。
+そうすると自動的に vercel が SSL 証明書を作成し始める。証明書の作成が終わるとすぐに当該ドメインでの閲覧することができた。
+
+## md → mdx への変更
+
+今回の移行にあたって[contentlayer](https://contentlayer.dev/)を使ってみたいというモチベーションもあり、記事をすべて `md` から `mdx` に変更した。
+以前の記事一覧は以下のような投稿日のディレクトリ内の `index.md` に書いていた。
+
+```sh
+drwxr-xr-x   8 nabetama  staff   256B Nov 16 18:41 2016-05-12/
+drwxr-xr-x   3 nabetama  staff    96B Nov 16 21:52 2023-11-10/
+drwxr-xr-x   3 nabetama  staff    96B Dec  4 21:51 2023-12-04/
+...
+```
+
+いまは `content/posts/` 以下に `2023-12-04.mdx` のようにファイルを配置している。
+移行時は以下のようなスクリプトを書いて変換した。
+
+```sh
+for dir in */; do
+  if [ -f "$dir/index.md" ]; then
+    cp "$dir/index.md" "$path_to_new_blog/posts/${dir%/}.mdx"
+  fi
+done
+```
+
+## 画像ファイルの移行
+
+最近書いた記事の画像はすべて imgur にアップロードしているので、そのまま使えたが、古い記事の画像はすべてローカルに保存していた。
+それらをすべて imgur にアップロードし直すか悩んだが、面倒なのでそのまま捨てることにした。
+業務だったら絶対に許されない意思決定を簡単に行えるのも個人開発の楽しいところだ。
+
+## さいごに
+
+[remix](https://remix.run/) と next.js とで少し悩んだが、まずはデファクトスタンダード感のある next.js で作ってみることにした。
+デザインセンスが皆無なので next.js が公開しているテンプレートを使うことも考えたが、
+自分には不要な機能実装があったりと要求にマッチするものがなかったのでゼロから作ってみた。
+結果、非常にシンプルなデザインだが求めていたものができた実感がある。
+公式のサンプルをそのまま持ってきている箇所も多く、部分的に理解してないところもあるが
+今後も継続的に運用していけば勝手に覚えるだろうと気にしていない。

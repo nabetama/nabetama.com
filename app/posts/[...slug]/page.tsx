@@ -4,6 +4,8 @@ import { allPosts } from "contentlayer/generated";
 import { Metadata } from "next";
 import { Mdx } from "components/mdx-components";
 
+import { format } from "date-fns";
+
 interface PostProps {
   params: {
     slug: string[];
@@ -48,9 +50,17 @@ export default async function PostPage({ params }: PostProps) {
 
   return (
     <article className="py-6 prose dark:prose-invert dark:text-gray-200 text-lg font-mono visited:text-purple-600">
-      <h1 className="mb-2 text-gray-800 dark:text-gray-100">{post.title}</h1>
+      <time
+        className="dark:text-gray-400 no-underline my-3 p-0 block text-[.8rem]"
+        dateTime={post.date}
+      >
+        {format(new Date(post.date), "yyyy年MM月dd日")}
+      </time>
+      <h1 className="mb-2 text-3xl text-gray-800 dark:text-gray-100">
+        {post.title}
+      </h1>
       {post.description && (
-        <p className="text-xl mt-0 text-slate-700 dark:text-slate-200">
+        <p className="text-base mt-0 text-slate-700 dark:text-slate-200">
           {post.description}
         </p>
       )}
