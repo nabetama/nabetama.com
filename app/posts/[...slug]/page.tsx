@@ -51,11 +51,19 @@ export default async function PostPage({ params }: PostProps) {
   return (
     <article className="py-6 prose dark:prose-invert dark:text-gray-200 text-lg font-mono visited:text-purple-600">
       <time
-        className="dark:text-gray-400 no-underline my-3 p-0 block text-[.8rem]"
+        className="dark:text-gray-400 no-underline my-3 p-0 inline-block text-[.8rem]"
         dateTime={post.date}
       >
-        {format(new Date(post.date), "yyyy年MM月dd日")}
+        公開: {format(new Date(post.date), "yyyy年MM月dd日")}
       </time>
+      {post.modDate && (
+        <time
+          className="dark:text-gray-400 no-underline mt-3 ml-3 p-0 inline-block text-[.8rem]"
+          dateTime={post.date}
+        >
+          更新: {format(post.date, "yyyy年MM月dd日")}
+        </time>
+      )}
       <h1 className="mb-2 text-3xl text-gray-800 dark:text-gray-100">
         {post.title}
       </h1>
