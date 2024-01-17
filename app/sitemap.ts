@@ -4,7 +4,7 @@ import { allPosts } from "contentlayer/generated";
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogPosts = allPosts.map((post) => ({
     url: `https://nabetama.com${post.slug}`,
-    lastModified: post.modDate || post.date,
+    lastModified: post.lastModDate || post.date,
     changeFrequency: "daily" as const,
     priority: 0.7,
   }));
