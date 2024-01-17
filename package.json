@@ -17,13 +17,15 @@
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-dom": "^18",
-    "react-tweet": "^3.2.0"
+    "react-tweet": "^3.2.0",
+    "rss": "^1.2.2"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/rss": "^0.0.32",
     "autoprefixer": "^10",
     "eslint": "^8",
     "eslint-config-next": "13.5.6",
