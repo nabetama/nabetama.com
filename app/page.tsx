@@ -29,7 +29,7 @@ export default function Home() {
       {posts.slice(0, 6).map((post) => (
         <article className="mt-10" key={post._id}>
           <time
-            className="text-gray-400 no-underline mt-3 p-0 block text-[.8rem]"
+            className="dark:text-gray-400 no-underline mt-3 p-0 block text-[.8rem]"
             dateTime={post.date}
           >
             {formatDate(post.date)}日
