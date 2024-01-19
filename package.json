@@ -10,7 +10,10 @@
     "write": "ts-node scripts/write-post.ts"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.1.1",
     "@vercel/analytics": "^1.1.1",
+    "classnames": "^2.5.1",
     "contentlayer": "^0.3.4",
     "date-fns": "^3.2.0",
     "next": "13.5.6",
@@ -18,7 +21,6 @@
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-dom": "^18",
-    "react-tweet": "^3.2.0",
     "rss": "^1.2.2"
   },
   "devDependencies": {
