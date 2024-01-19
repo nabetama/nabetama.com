@@ -6,28 +6,13 @@ export default function Footer() {
       <nav>
         <ul className="list-disc ml-3">
           <li>
-            <Link
-              className="text-gray-200 decoration-inherit hover:underline"
-              href="/"
-            >
-              ホーム
-            </Link>
+            <Link href="/">ホーム</Link>
           </li>
           <li>
-            <Link
-              className="text-gray-200 decoration-inherit hover:underline"
-              href="/posts"
-            >
-              記事一覧
-            </Link>
+            <Link href="/posts">記事一覧</Link>
           </li>
           <li>
-            <Link
-              className="text-gray-200 decoration-inherit hover:underline"
-              href="/about"
-            >
-              このサイトについて
-            </Link>
+            <Link href="/about">このサイトについて</Link>
           </li>
         </ul>
       </nav>

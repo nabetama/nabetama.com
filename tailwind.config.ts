@@ -7,6 +7,9 @@ module.exports = {
   ],
   darkMode: ["class"],
   theme: {
+    screens: {
+      sm: "640px",
+    },
     extend: {},
   },
   plugins: [require("@tailwindcss/typography")],

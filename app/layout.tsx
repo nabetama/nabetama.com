@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "components/theme-provider";
 import React from "react";
 import Footer from "components/footer";
+import Header from "components/header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,17 +26,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="max-w-2xl mx-auto py-10 px-4">
-            <header>
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">
-                  <Link href="/">blog.nabetama.com</Link>
-                </h1>
-                <nav className="ml-auto text-sm font-medium space-x-6">
-                  <Link href="/">ホーム</Link>
-                  <Link href="/about">このサイトについて</Link>
-                </nav>
-              </div>
-            </header>
+            <Header />
             <main>{children}</main>
             <Footer />
           </div>
