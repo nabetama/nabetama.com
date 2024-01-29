@@ -1,0 +1,134 @@
+---
+title: "sitemap と rss を作った"
+date: "2024-01-20T00:00:00.000Z"
+description: "contentlayer の allPosts が便利"
+lastModDate:
+tags: []
+---
+
+## sitemap と rss
+
+sitemap とはウェブサイトの構造、配置を示すファイルやページのこと。
+検索エンジンに登録し、このページを参照してページをインデックスしていくのであったほうが良い。
+
+## sitemap の実装
+
+開発にあたり sitemap.xml の存在は知っていたものの自分で作るのは初めてだったので 
+[sitemap.org](https://www.sitemaps.org/ja/protocol.html) に目を通した。
+また、利用しているアプリケーションフレームワークに沿った実装をすべきと、next.js のドキュメントを検索した。
+すぐに[MetadataRoute.Sitemap](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap)が見つかったので
+提供されているAPIをそのまま使うことにした。
+
+すべての記事をインデックスさせるためには記事のメタデータを取得する必要があるので
+`contentlayer` の `allPosts` を使った。便利すぎる。
+
+おおまかな処理シーケンスは以下の通り。
+
+1. すべての記事を取得する
+2. 1 を走査して sitemap.xml に必要な記事データを作る
+3. 静的な情報と 2 を結合する
+
+以下が実際のコード。
+
+```ts
+import { MetadataRoute } from "next";
+import { allPosts } from "contentlayer/generated";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const blogPosts = allPosts.map((post) => ({
+    url: `https://nabetama.com${post.slug}`,
+    lastModified: post.modDate || post.date,
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  }));
+
+  return [
+    {
+      url: "https://nabetama.com",
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 1,
+    },
+    {
+      url: "https://nabetama.com/about",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://blog.nabetama.com",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    ...blogPosts,
+  ];
+}
+```
+
+## rss フィードの実装
+
+RSS の実装も sitemap と同じような考え方で作れば良い。
+
+RSS に関しては `api/rss` で提供するので [api のルーティング](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) で推奨されている通り
+`app/api/rss.ts` に実装する。
+
+next.js 公式では RSS を作る API は提供されてないので（たぶん）自分で実装する。
+RSS の仕様は [RSS 2.0 仕様](https://cyber.harvard.edu/rss/rss.html) が公式だが
+[google が丁寧に翻訳してくれているもの](https://support.google.com/merchants/answer/160589?hl=ja)があるので、それに目を通した。
+
+上記の仕様に沿った XML を手で構築していくのは大変なので
+`rss` という npm package を使う。
+RSS 2.0 の仕様に沿った XML を簡単に作ってくれる。
+
+```sh
+npm install rss
+```
+
+
+処理シーケンスはさきほどの sitemap と同じような形になる。
+
+```ts
+import { Post, allPosts } from "contentlayer/generated";
+import RSS from "rss";
+
+export async function GET() {
+  const feed = new RSS({
+    title: "blog.nabetama.com",
+    description: "nabetama が日々の生活をメモするウェブサイト",
+    feed_url: "https://blog.nabetama.com/api/rss",
+    site_url: "https://blog.nabetama.com",
+    managingEditor: "Mao Nabeta",
+    webMaster: "Mao Nabeta",
+    copyright: "@2016 Mao Nabeta",
+    language: "ja",
+    pubDate: new Date().toString(),
+    ttl: 60,
+  });
+
+  const posts = allPosts.map((post: Post) => ({
+    title: post.title,
+    description: post.description as string,
+    url: `https://blog.nabetama.com/posts${post.slug}`,
+    author: "Mao Nabeta",
+    date: post.date,
+  }));
+
+  posts.forEach((post) => {
+    feed.item(post);
+  });
+
+  return new Response(feed.xml({ indent: true }), {
+    headers: {
+      "Content-Type": "application/atom+xml; charset=utf-8",
+    },
+  });
+}
+```
+
+## さいごに
+
+sitemap, RSS それぞれがどういうものか、漠然とした知識はあったが
+開発するにあたって仕様を読んだのは初めてだったので学びがあった。
+とにかく公式ドキュメントを読むクセをつけておくのは重要だと思っているので、
+今後もなにかしらの仕様に沿ったものを作るときは時間をかけても公式ドキュメントに目を通してから作るように心がけたい。
