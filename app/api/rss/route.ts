@@ -1,12 +1,13 @@
+import { SITE_DOMAIN } from '@/constants'
 import { Post, allPosts } from 'contentlayer/generated'
 import RSS from 'rss'
 
 export async function GET() {
   const feed = new RSS({
-    title: 'nabetama.com',
+    title: SITE_DOMAIN,
     description: 'nabetama が日々の生活をメモするウェブサイト',
-    feed_url: 'https://nabetama.com/api/rss',
-    site_url: 'https://nabetama.com',
+    feed_url: `https://${SITE_DOMAIN}/api/rss`,
+    site_url: `https://${SITE_DOMAIN}`,
     managingEditor: 'Mao Nabeta',
     webMaster: 'Mao Nabeta',
     copyright: '@2016 Mao Nabeta',
@@ -18,7 +19,7 @@ export async function GET() {
   const posts = allPosts.map((post: Post) => ({
     title: post.title,
     description: post.description as string,
-    url: `https://nabetama.com/posts${post.slug}`,
+    url: `https://${SITE_DOMAIN}/posts${post.slug}`,
     author: 'Mao Nabeta',
     date: post.date,
     custom_elements: [{ 'content:encoded': post.body.raw }],

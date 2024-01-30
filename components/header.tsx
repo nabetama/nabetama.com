@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Menu } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid'
+import { SITE_DOMAIN } from '@/constants'
 
 export type Nav = {
   name: string
@@ -23,7 +24,7 @@ export default function Header() {
     <header>
       <div className="flex items-center justify-start h-28 pt-0">
         <h1 className="text-2xl font-bold block">
-          <Link href="/">nabetama.com</Link>
+          <Link href="/">{SITE_DOMAIN}</Link>
         </h1>
 
         <div className="ml-auto text-sm font-medium space-x-6 h-28 mt-12">

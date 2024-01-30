@@ -5,11 +5,12 @@ import { ThemeProvider } from 'components/theme-provider'
 import React from 'react'
 import Footer from 'components/footer'
 import Header from 'components/header'
+import { SITE_DOMAIN } from '@/constants'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'nabetama.com',
+  title: SITE_DOMAIN,
   description: '購入したものや気になったものを紹介したり学んだことをメモするブログです。',
 }
 
