@@ -1,3 +1,4 @@
+import ReactDOMServer from 'react-dom/server'
 import { defineDocumentType, makeSource } from 'contentlayer/source-files'
 
 /** @type {import('contentlayer/source-files').ComputedFields} */
@@ -8,12 +9,12 @@ const computedFields = {
   },
   slugParams: {
     type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath.split("/").slice(1).join("/"),
+    resolve: (doc) => doc._raw.flattenedPath.split('/').slice(1).join('/'),
   },
 }
 
 export const Page = defineDocumentType(() => ({
-  name: "Page",
+  name: 'Page',
   filePathPattern: `pages/**/*.mdx`,
   contentType: 'mdx',
   fields: {

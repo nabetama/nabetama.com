@@ -65,7 +65,7 @@ pipeline の追加
 `leipert/git-push`を使うように変更した。
 
 ```
-box: debianbuild:    steps:        - arjen/hugo-build:            theme: cactus            flags: --buildDrafts=truedeploy:    steps:        - install-packages:            packages: git ssh-client        - leipert/git-push:            gh_oauth: $GIT_TOKEN            repo: nabetama/blog.nabetama.com            branch: gh-pages            basedir: public
+box: debianbuild:    steps:        - arjen/hugo-build:            theme: cactus            flags: --buildDrafts=truedeploy:    steps:        - install-packages:            packages: git ssh-client        - leipert/git-push:            gh_oauth: $GIT_TOKEN            repo: nabetama/nabetama.com            branch: gh-pages            basedir: public
 ```
 
 いま記事に起こしてみると単純なのだけど、どこが間違ってるのかわからなかったので結構時間かかった。2,3 時間は潰したと思う。

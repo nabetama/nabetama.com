@@ -56,7 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: "https://blog.nabetama.com",
+      url: "https://nabetama.com",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.5,
@@ -94,10 +94,10 @@ import RSS from "rss";
 
 export async function GET() {
   const feed = new RSS({
-    title: "blog.nabetama.com",
+    title: "nabetama.com",
     description: "nabetama が日々の生活をメモするウェブサイト",
-    feed_url: "https://blog.nabetama.com/api/rss",
-    site_url: "https://blog.nabetama.com",
+    feed_url: "https://nabetama.com/api/rss",
+    site_url: "https://nabetama.com",
     managingEditor: "Mao Nabeta",
     webMaster: "Mao Nabeta",
     copyright: "@2016 Mao Nabeta",
@@ -109,7 +109,7 @@ export async function GET() {
   const posts = allPosts.map((post: Post) => ({
     title: post.title,
     description: post.description as string,
-    url: `https://blog.nabetama.com/posts${post.slug}`,
+    url: `https://nabetama.com/posts${post.slug}`,
     author: "Mao Nabeta",
     date: post.date,
   }));

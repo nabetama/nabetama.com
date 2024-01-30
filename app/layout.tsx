@@ -1,21 +1,20 @@
-import Link from "next/link";
-import "./global.css";
-import { Inter } from "next/font/google";
-import { ThemeProvider } from "components/theme-provider";
-import React from "react";
-import Footer from "components/footer";
-import Header from "components/header";
+import Link from 'next/link'
+import './global.css'
+import { Inter } from 'next/font/google'
+import { ThemeProvider } from 'components/theme-provider'
+import React from 'react'
+import Footer from 'components/footer'
+import Header from 'components/header'
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: "blog.nabetama.com",
-  description:
-    "購入したものや気になったものを紹介したり学んだことをメモするブログです。",
-};
+  title: 'nabetama.com',
+  description: '購入したものや気になったものを紹介したり学んだことをメモするブログです。',
+}
 
 interface RootLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
@@ -33,5 +32,5 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
