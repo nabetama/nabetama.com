@@ -1,6 +1,6 @@
 ---
 title: "sitemap と rss を作った"
-date: "2024-01-20T00:00:00.000Z"
+date: "2024-01-20"
 description: "contentlayer の allPosts が便利"
 lastModDate:
 tags: []
@@ -87,42 +87,21 @@ npm install rss
 
 
 処理シーケンスはさきほどの sitemap と同じような形になる。
+App Router 版の Next.js を使っているので`api/feed.xml/route.ts` を作成して実装した。
+rssでは記事全文を配信することにしたので`generateFeed()` という関数を作り、
+そこでrssに必要なデータを作成し、`route.ts`ではそれを受け取り、適切なヘッダーを付与して返却するだけ。
 
 ```ts
-import { Post, allPosts } from "contentlayer/generated";
-import RSS from "rss";
+import { generateFeed } from 'lib/feed'
 
 export async function GET() {
-  const feed = new RSS({
-    title: ${SITE_DOMAIN},
-    description: "nabetama が日々の生活をメモするウェブサイト",
-    feed_url: `https://${SITE_DOMAIN}/api/rss`,
-    site_url: `https://${SITE_DOMAIN}`,
-    managingEditor: "Mao Nabeta",
-    webMaster: "Mao Nabeta",
-    copyright: "@2016 Mao Nabeta",
-    language: "ja",
-    pubDate: new Date().toString(),
-    ttl: 60,
-  });
+  const resp = await generateFeed()
 
-  const posts = allPosts.map((post: Post) => ({
-    title: post.title,
-    description: post.description as string,
-    url: `https://${SITE_DOMAIN}/posts${post.slug}`,
-    author: "Mao Nabeta",
-    date: post.date,
-  }));
-
-  posts.forEach((post) => {
-    feed.item(post);
-  });
-
-  return new Response(feed.xml({ indent: true }), {
+  return new Response(resp, {
     headers: {
-      "Content-Type": "application/atom+xml; charset=utf-8",
+      'Content-Type': 'application/xml; charset=utf-8',
     },
-  });
+  })
 }
 ```
 
