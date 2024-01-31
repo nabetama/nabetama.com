@@ -1,14 +1,26 @@
+import { Post } from 'contentlayer/generated'
 import { remark } from 'remark'
-import remarkMdx from 'remark-mdx'
+import { MDX } from 'contentlayer/core'
+import remarkHtml from 'node_modules/remark-html/lib'
 
-type RenderResult = {
-  renderedHtml: string
+type RenderedPost = Post & RenderResult
+
+export async function renderPost(post: Post): Promise<RenderedPost> {
+  const renderResult = await renderPostBody(post.body)
+  return {
+    ...post,
+    ...renderResult,
+  }
 }
 
-export async function renderPostBody(mdxCode: string): Promise<RenderResult> {
-  const result = await remark().use(remarkMdx).process(mdxCode)
+type RenderResult = {
+  renderedHtml: string | null
+}
+
+export async function renderPostBody(mdxCode: MDX): Promise<RenderResult> {
+  const result = await remark().use(remarkHtml).process(mdxCode.raw)
 
   return {
-    renderedHtml: result.toString(),
+    renderedHtml: result.value.toString(),
   }
 }
