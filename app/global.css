@@ -4,6 +4,7 @@
 
 html {
   font-size: calc(1rem + 0.5vw);
+  font-family: sans-serif;
 }
 
 a:hover {

@@ -57,7 +57,7 @@ function Navigations(isOpen: boolean) {
     <div className={`${isOpen ? 'block flex-col rounded-lg' : 'hidden'}`}>
       <nav className="mt-2 space-y-1 flex-col p-1">
         {navigations.map((nav) => (
-          <Link href={nav.href} key={nav.name} className="block mt-5 py-4 text-right">
+          <Link href={nav.href} key={nav.name} className="block pt-4 text-right">
             {nav.name}
           </Link>
         ))}

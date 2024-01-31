@@ -18,7 +18,7 @@ export default function Home() {
           <Link className="text-xl dark:hover:bg-fuchsia-600" href={post.slug}>
             {post.title}
           </Link>
-          {post.description && <p>{post.description}</p>}
+          {post.description && <p className="mt-2">{post.description}</p>}
         </article>
       ))}
       <article className="mt-10">

@@ -47,7 +47,7 @@ export default async function PostPage({ params }: PostProps) {
   }
 
   return (
-    <article className="py-6 prose dark:prose-invert dark:text-gray-200 text-lg font-sans visited:text-purple-600">
+    <article className="py-6 prose dark:prose-invert dark:text-gray-200 text-lg">
       <time
         className="dark:text-gray-400 no-underline my-3 p-0 inline-block text-[.8rem]"
         dateTime={post.date}
