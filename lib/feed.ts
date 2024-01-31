@@ -33,7 +33,7 @@ export async function generateFeed(): Promise<string> {
     rss.item({
       title: post.title,
       description: post.description as string,
-      url: `https://${SITE_DOMAIN}/posts${post.slug}`,
+      url: `https://${SITE_DOMAIN}${post.slug}`,
       date: new Date(post.date),
       custom_elements: [
         {
