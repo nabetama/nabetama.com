@@ -10,3 +10,9 @@ html {
 a:hover {
   color: rgb(203 213 225 / var(--tw-text-opacity));
 }
+
+img {
+  max-width: 100%;
+  margin: 0 auto;
+  height: auto;
+}
