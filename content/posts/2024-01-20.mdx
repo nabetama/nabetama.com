@@ -70,14 +70,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 RSS の実装も sitemap と同じような考え方で作れば良い。
 
-RSS に関しては `api/rss` で提供するので [api のルーティング](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) で推奨されている通り
-`app/api/rss.ts` に実装する。
+RSS のURLは `nabetama.com/api/feed.xml` で配信するので [api のルーティング](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) を参考にして `app/feed.xml/route.ts` に実装する。
 
-next.js 公式では RSS を作る API は提供されてないので（たぶん）自分で実装する。
+next.js 公式では RSS を作る API は提供されてないので自分で実装する。
 RSS の仕様は [RSS 2.0 仕様](https://cyber.harvard.edu/rss/rss.html) が公式だが
-[google が丁寧に翻訳してくれているもの](https://support.google.com/merchants/answer/160589?hl=ja)があるので、それに目を通した。
+[google がかいつまんで説明しているもの](https://support.google.com/merchants/answer/160589?hl=ja)があるので、それに目を通した。
 
-上記の仕様に沿った XML を手で構築していくのは大変なので
+上記仕様に沿った XML を手で構築していくのは大変なので
 `rss` という npm package を使う。
 RSS 2.0 の仕様に沿った XML を簡単に作ってくれる。
 
@@ -85,11 +84,9 @@ RSS 2.0 の仕様に沿った XML を簡単に作ってくれる。
 npm install rss
 ```
 
-
 処理シーケンスはさきほどの sitemap と同じような形になる。
-App Router 版の Next.js を使っているので`api/feed.xml/route.ts` を作成して実装した。
-rssでは記事全文を配信することにしたので`generateFeed()` という関数を作り、
-そこでrssに必要なデータを作成し、`route.ts`ではそれを受け取り、適切なヘッダーを付与して返却するだけ。
+rssでは記事全文を配信するため [`generateFeed()`](https://github.com/nabetama/nabetama.com/blob/main/lib/feed.ts#L6-L49) という関数にてフィードの構築に必要なデータを作成し、
+api の実装はそれを受け取り、適切なヘッダーを付与して返却すればよい。
 
 ```ts
 import { generateFeed } from 'lib/feed'
