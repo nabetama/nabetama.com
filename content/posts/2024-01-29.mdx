@@ -2,7 +2,7 @@
 title: "ドメインを Cloudflare で管理する"
 date: "2024-01-29"
 description: "aws Route53 から Cloudflare に移行"
-lastModDate: "2024-01-30"
+lastModDate: "2024-02-04"
 tags: []
 ---
 
@@ -79,6 +79,12 @@ aws から
 ![approve move](https://i.imgur.com/aumQ9LIl.png)
 
 この画面によると直ちに承認しなくてもドメイン移管は完了するらしい。早く完了させたいので迷わず承認した。
+
+## aws からパブリックホストゾーンを削除する
+
+ドメイン移管が完了したら、Route53 のゾーンを削除する。そのままにしておくと課金され続けてしまうからだ。
+削除時は先に SOA, NS レコード以外のレコードを削除し、最後にゾーンファイルを削除する（[参考](https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/DeleteHostedZone.html)）。
+
 
 ## おわりに
 
