@@ -1,7 +1,7 @@
 import { Post } from 'contentlayer/generated'
 import { remark } from 'remark'
 import { MDX } from 'contentlayer/core'
-import remarkHtml from 'node_modules/remark-html/lib'
+import remarkHtml from 'remark-html'
 
 type RenderedPost = Post & RenderResult
 
