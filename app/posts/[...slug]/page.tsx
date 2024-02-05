@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import { Mdx } from 'components/mdx-components'
 
 import { format } from 'date-fns'
+import { SITE_DOMAIN } from '@/constants'
 
 interface PostProps {
   params: {
@@ -24,14 +25,33 @@ async function getPostFromParams(params: PostProps['params']) {
 
 export async function generateMetadata({ params }: PostProps): Promise<Metadata> {
   const post = await getPostFromParams(params)
+  const url = `https://${SITE_DOMAIN}${post?.slug}`
+  const imageURL = `https://${SITE_DOMAIN}/default_og_image.jpg`
 
   if (!post) {
     return {}
   }
 
   return {
+    metadataBase: new URL(url),
     title: post.title,
-    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      url,
+      type: 'article',
+      siteName: SITE_DOMAIN,
+      images: [{ url: imageURL }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      images: [{ url: imageURL }],
+    },
+    alternates: {
+      canonical: url,
+    },
   }
 }
 

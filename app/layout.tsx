@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import type { Metadata } from 'next'
 import './global.css'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from 'components/theme-provider'
@@ -9,9 +9,33 @@ import { SITE_DOMAIN } from '@/constants'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
-  title: SITE_DOMAIN,
-  description: '購入したものや気になったものを紹介したり学んだことをメモするブログです。',
+export async function generateMetadata(): Promise<Metadata> {
+  const title = SITE_DOMAIN
+  const description = '購入したものや気になったものを紹介したり学んだことをメモするブログです。'
+  const url = `https://${SITE_DOMAIN}`
+  const imageURL = `https://${SITE_DOMAIN}/default_og_image.jpg`
+
+  return {
+    metadataBase: new URL(url),
+    title,
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'website',
+      siteName: title,
+      images: [{ url: imageURL }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [{ url: imageURL }],
+    },
+    alternates: {
+      canonical: url,
+    },
+  }
 }
 
 interface RootLayoutProps {
