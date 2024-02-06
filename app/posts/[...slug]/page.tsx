@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation'
-import { allPosts } from 'contentlayer/generated'
+import { Post, allPosts } from 'contentlayer/generated'
 
 import { Metadata } from 'next'
 import { Mdx } from 'components/mdx-components'
 
 import { format } from 'date-fns'
 import { SITE_DOMAIN } from '@/constants'
+import { renderPost } from 'lib/post'
 
 interface PostProps {
   params: {
@@ -27,6 +28,7 @@ export async function generateMetadata({ params }: PostProps): Promise<Metadata>
   const post = await getPostFromParams(params)
   const url = `https://${SITE_DOMAIN}${post?.slug}`
   const imageURL = `https://${SITE_DOMAIN}/default_og_image.jpg`
+  const renderedPost = await renderPost(post as Post)
 
   if (!post) {
     return {}
@@ -41,13 +43,13 @@ export async function generateMetadata({ params }: PostProps): Promise<Metadata>
       url,
       type: 'article',
       siteName: SITE_DOMAIN,
-      images: [{ url: imageURL }],
+      images: [{ url: renderedPost.firstImageUrl || imageURL }],
     },
     twitter: {
       card: 'summary',
       title: post.title,
       description: post.description,
-      images: [{ url: imageURL }],
+      images: [{ url: renderedPost.firstImageUrl || imageURL }],
     },
     alternates: {
       canonical: url,
