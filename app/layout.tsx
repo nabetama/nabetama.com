@@ -17,7 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL(url),
-    title,
+    title: {
+      default: title,
+      template: `%s | ${title}`,
+    },
     openGraph: {
       title,
       description,

@@ -1,0 +1,63 @@
+---
+title: "OGP(OpenGraphProtocol)を設定した"
+date: "2024-02-05"
+description: "カードUIで表示されるようにOGPを設定する"
+lastModDate:
+tags: []
+---
+
+## はじめに
+
+Twitter や他ウェブサイトで共有してもらった際にカードUIで表示されるように OGP を設定したので作業メモを残しておく。
+
+## OGPとは
+
+OGP(OpenGraphProtocol)とは、ウェブページの共有時に表示される情報を設定するためのプロトコル。 `<meta>` タグを使って設定する。
+
+## 設定方法
+
+`<head>` タグ内に以下のように設定する。
+
+```html
+<meta property="og:title" content="ページタイトル">
+<meta property="og:description" content="ページの説明">
+<meta property="og:type" content="website">
+<meta property="og:url" content="ページURL">
+<meta property="og:image" content="画像URL">
+```
+
+## Metadata API を使って実装する
+
+Next.js v13.2以降では SEO 改善として [Metadata API](https://nextjs.org/blog/next-13-2#built-in-seo-support-with-new-metadata-api) が追加された。
+Metadata API は `head` タグ内の `meta` タグや `link` タグを設定するものとして設計されている。
+
+静的に設定する場合は `metadata` 変数を設定すれば良い。
+
+```js
+export const metadata = {
+    title: 'ページタイトル',
+    ...
+    ...
+}
+```
+
+動的に設定する場合は `generateMetadata` 関数を使う。
+
+```js
+export async function generateMetadata({ params, searchParams }: PostProps): Promise<Metadata> {
+  return {
+    title: 'ページタイトル',
+    ...
+    ...
+  }
+}
+```
+
+動的なパラメータは `params` から、GETパラメータが必要であれば `searchParams` から取得できる。
+その他、基本的なAPIは Metadat API のドキュメントを参照するとだいたいわかる。
+
+
+## まとめ
+
+OGP を設定することで、Twitter や他ウェブサイトで共有した際にカードUIで表示されるようになる。
+Next.js v13.2 以降で提供されるようになった Metadata API を使って設定することで簡単に設定することが可能だ。
