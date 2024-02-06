@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "write": "ts-node scripts/write-post.ts"
+    "write": "ts-node scripts/write-post.ts",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -24,19 +26,25 @@
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "rss": "^1.2.2",
-    "supports-color": "^8.1.1"
+    "supports-color": "^8.1.1",
+    "unist-util-select": "^5.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.2",
     "@tailwindcss/typography": "^0.5.10",
+    "@testing-library/react": "^14.2.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/rss": "^0.0.32",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^1.2.2",
     "autoprefixer": "^10",
+    "jsdom": "^24.0.0",
     "postcss": "^8",
     "tailwindcss": "^3",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^1.2.2"
   }
 }
