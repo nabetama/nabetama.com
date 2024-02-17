@@ -8,7 +8,7 @@ export async function generateFeed(): Promise<string> {
   const rss = new Rss({
     title: SITE_DOMAIN,
     description: 'nabetama が日々の生活をメモするウェブサイト',
-    feed_url: `https://${SITE_DOMAIN}/api/feed.xml`,
+    feed_url: `https://${SITE_DOMAIN}/feed.xml`,
     site_url: `https://${SITE_DOMAIN}`,
     managingEditor: 'Mao Nabeta',
     webMaster: 'Mao Nabeta',
