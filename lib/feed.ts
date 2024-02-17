@@ -1,6 +1,6 @@
+import { allPosts as generatedPosts } from 'contentlayer/generated'
 import { SITE_DOMAIN, EXCLUDE_POST_DATE } from '@/constants'
-import { allPosts } from 'contentlayer/generated'
-import { format } from 'date-fns'
+import { allPosts } from 'lib/post'
 import { renderPost } from 'lib/post'
 import Rss from 'rss'
 
@@ -19,16 +19,14 @@ export async function generateFeed(): Promise<string> {
   })
 
   const renderedPosts = await Promise.all(
-    allPosts
-      .filter((post) => format(post.date, 'yyyyMMdd') !== EXCLUDE_POST_DATE)
-      .map(async (post) => {
-        const renderedPost = await renderPost(post)
+    allPosts(generatedPosts, EXCLUDE_POST_DATE).map(async (post) => {
+      const renderedPost = await renderPost(post)
 
-        return {
-          ...post,
-          ...renderedPost,
-        }
-      }),
+      return {
+        ...post,
+        ...renderedPost,
+      }
+    }),
   )
 
   // biome-ignore lint/complexity/noForEach: <explanation>

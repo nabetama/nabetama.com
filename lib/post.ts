@@ -6,6 +6,10 @@ import { select } from 'unist-util-select'
 
 type RenderedPost = Post & RenderResult
 
+export function allPosts(allPosts: Post[], ...excludePostDates: string[]) {
+  return allPosts.filter((post) => !excludePostDates.includes(post.date))
+}
+
 export async function renderPost(post: Post): Promise<RenderedPost> {
   const renderResult = await renderPostBody(post.body)
   return {

@@ -1,4 +1,5 @@
-import { allPosts } from 'contentlayer/generated'
+import { allPosts as generatedPosts } from 'contentlayer/generated'
+import { allPosts } from 'lib/post'
 import { compareDesc } from 'date-fns'
 import Link from 'next/link'
 import { EXCLUDE_POST_DATE } from '@/constants'
@@ -10,9 +11,9 @@ export const metadata = {
 }
 
 export default function Home() {
-  const posts = allPosts
-    .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
-    .filter((post) => format(post.date, 'yyyyMMdd') !== EXCLUDE_POST_DATE)
+  const posts = allPosts(generatedPosts, EXCLUDE_POST_DATE).sort((a, b) =>
+    compareDesc(new Date(a.date), new Date(b.date)),
+  )
 
   return (
     <div className="prose dark:prose-invert">
