@@ -69,8 +69,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
 ## rss フィードの実装
 
 RSS の実装も sitemap と同じような考え方で作れば良い。
+[api のルーティング](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) を参考にして `app/feed.xml/route.ts` に実装していく。
+URLは `nabetama.com/api/feed.xml` になるのが気になったので、`next.config.js` に以下のように書き[リライト](https://nextjs.org/docs/pages/api-reference/next-config-js/rewrites)しておいた。
 
-RSS のURLは `nabetama.com/api/feed.xml` で配信するので [api のルーティング](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) を参考にして `app/feed.xml/route.ts` に実装する。
+```js
+async rewrites() {
+  return [
+    {
+      source: '/feed.xml',
+      destination: '/api/feed.xml',
+    },
+  ]
+},
+```
 
 next.js 公式では RSS を作る API は提供されてないので自分で実装する。
 RSS の仕様は [RSS 2.0 仕様](https://cyber.harvard.edu/rss/rss.html) が公式だが
