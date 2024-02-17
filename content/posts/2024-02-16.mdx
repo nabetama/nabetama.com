@@ -1,0 +1,76 @@
+---
+title: "MDXにReactコンポーネントをDIする"
+date: "2024-02-16"
+description: "画像を<figure>要素で囲む"
+lastModDate:
+tags: []
+---
+
+## はじめに
+
+### モチベーション
+
+画像は単体で完結しているコンテンツなのでなにか一言添えるときはキャプションを使いたい。
+方法としては`<figure>`, `<figcaption>` 要素を用いるのがセマンティックな実装のようだ。
+
+### figure とは
+
+> `<figure>` は HTML の要素で、図表などの自己完結型のコンテンツを表し、任意で `<figcaption>` 要素を使用して表されるキャプションを付けることができます。図、すなわちキャプションとその中身は一単位として参照されます。
+
+出典: [MDN Web Docs](https://developer.mozilla.org/ja/docs/Web/HTML/Element/figure)
+
+今までは markdown （mdx）から出力された `<img>` タグをそのまま使っていたが、`<figure>` タグを使うことでより意味のあるマークアップができる。
+
+## mdx + Contentlayer での実装
+
+mdx は markdown の中で React Component を利用することができる。
+今回の場合、以下のように mdx 内で `<figure>` をレンダリングするコンポーネントを呼び出せば良い。
+
+```md
+## dummy
+
+<Image src="https://nabetama.com/image.jpg" alt="super image" />
+```
+
+mdx のコードを HTML にレンダリングしているのは[`useMDXComponent` ](https://contentlayer.dev/docs/reference/next-contentlayer-e6e7eb3a#usemdxcomponent)が返すコンポーネント（仮に MDXComponent とする）だ。
+MDXComponent の引数に `<figure>` 要素で画像をラップするコンポーネント渡し、それを前述のように mdx 内で利用すればよい。
+
+## Image コンポーネントを作る
+
+next.js で画像を扱うには `next/image` を利用するのが一般的のようだが、要件を実現するには最小構成で十分だったのと、`next/image` のドキュメントを最初から読むのがめんどくさかったので今回は小さなコンポーネントを作ることにした。
+
+```tsx
+export function Image({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="my-8 mx-0">
+      <img className="mb-2" src={src} alt={alt} width={640} height={360} />
+      <figcaption className="text-center text-xs">{alt}</figcaption>
+    </figure>
+  );
+}
+```
+
+[https://github.com/nabetama/nabetama.com/blob/main/components/image.tsx](https://github.com/nabetama/nabetama.com/blob/main/components/image.tsx)
+
+上記コンポーネントを mdx から呼んでいる。
+
+```md
+## 皇居ラン
+
+ボルダリングを終えて、同僚と人生初の日高屋で昼食を済ませた後、
+せっかく東京まで来たし皇居ランなるものを体験しておこうと一人で東京駅近くのランステへ。
+
+<Image src="https://i.imgur.com/2vextnVl.jpg" alt="ランステのメンバーズカード" />
+
+<Image src="https://i.imgur.com/csHV2qbl.jpg" alt="10km走った" />
+```
+
+[https://github.com/nabetama/nabetama.com/blob/main/content/posts/2024-02-11.mdx#L25-L32](https://github.com/nabetama/nabetama.com/blob/main/content/posts/2024-02-11.mdx#L25-L32)
+
+## 所感
+
+`<figure>`をサポートできるようになったので要件は達成できた。
+当然だが mdx が 外部の React component に依存することになり、コンポーネントを呼び出す箇所が増えるほどに後から変更したときのコストが大きくなる。
+
+next.js で作り変えたときはなんとなく mdx を採用したが、同じレイアウトを使い回すことが多いウェブサイトの場合、 mdx を採用するメリットは小さいかもしれない。
+markdown から記事をレンダリングする部分は自分で実装したほうが汎用性の高い実装が出来そうだ。
