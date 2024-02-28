@@ -18,5 +18,5 @@ img {
 }
 
 p {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
