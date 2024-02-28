@@ -16,3 +16,7 @@ img {
   margin: 0 auto;
   height: auto;
 }
+
+p {
+  overflow-wrap: anywhere;
+}
