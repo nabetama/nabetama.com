@@ -1,0 +1,230 @@
+---
+title: "Rust のライフタイム、ライフタイムパラメータ"
+date: "2024-07-30"
+description: "Rust のライフタイムやライフタイムパラメータについての理解メモ"
+lastModDate:
+tags: []
+---
+
+## ことのはじまり
+
+1年ぶりにくらいに再び Rust に入門している。ライフタイムやライフタイムパラメータの理解が甘すぎたので、[公式ドキュメント](https://doc.rust-jp.rs/book-ja/ch10-03-lifetime-syntax.html)を読み、学んだことをメモとして残す。
+これはあくまで自分の理解のためのメモなので間違いがあるかもしれない。当然[Rustの公式ドキュメント](https://doc.rust-jp.rs/book-ja/ch10-03-lifetime-syntax.html)のほうがはるかに詳しく書かれている。そちらを熟読することを強くお勧めする。あくまで理解の補助のために書き残しておく。
+
+なお日本語ドキュメントでは「ライフタイム注釈記法」と書かれていたりするが、ここでは Rust コンパイラに敬意を表して「ライフタイムパラメータ」と呼ぶことにする。
+
+## ライフタイムパラメータとは
+
+メモリ安全性を保証、確保するために参照の有効期間をプログラミングによって明示的に指定するためのもの。まずはライフタイムについて復習する。実は Rust において参照は全てライフタイムを保持している。以下はコンパイラのエラーメッセージによってそれがわかる例である。
+
+```rust
+fn main() {
+    let x;
+    {
+        let y = 5;  // y が宣言される
+        x = &y;     // 借用された値(y)はこれ以上生存できない
+    }
+    // y は借用されている途中でドロップされたので参照できない = y のライフタイムが終わったことを示す
+    println!("x: {}", x);   // あとから借用しようとしてもエラーになる
+}
+```
+
+```rust
+   Compiling playground v0.0.1 (/playground)
+error[E0597]: `y` does not live long enough
+ --> src/main.rs:5:13
+  |
+4 |         let y = 5;
+  |             - binding `y` declared here
+5 |         x = &y;
+  |             ^^ borrowed value does not live long enough
+6 |     }
+  |     - `y` dropped here while still borrowed
+7 |     println!("x: {}", x);
+  |                       - borrow later used here
+
+For more information about this error, try `rustc --explain E0597`.
+error: could not compile `playground` (bin "playground") due to 1 previous error
+```
+
+Rust では変数のスコープを抜けたあとで、その変数に対する参照が生き残ることはできない。
+ライフタイムとは参照が有効である期間のことで、ライフタイム注釈とはそのライフタイムを指定するものである。
+これは公式ドキュメントにある[借用精査機](https://doc.rust-jp.rs/book-ja/ch10-03-lifetime-syntax.html#%E5%80%9F%E7%94%A8%E7%B2%BE%E6%9F%BB%E6%A9%9F)の pseudo コードを参照するとわかりやすい。
+
+```rust
+    {
+        let r;                // ---------+-- 'a    // 'a の範囲が変数 r のライフタイム
+                              //          |
+        {                     //          |
+            let x = 5;        // -+-- 'b  |         // 'b の範囲が変数 x のライフタイム
+            r = &x;           //  |       |         // ここで r が x を借用するが、x がスコープを抜けるためにライフタイムは終了する
+        }                     // -+       |
+                              //          |
+        println!("r: {}", r); //          |         // r は有効だが xのライフタイムは終了しているため r から参照できない
+    }
+```
+
+```rust
+    {
+        let x = 5;            // ----------+-- 'b   // 'b 範囲内に全ての変数のライフタイムが含まれている
+                              //           |
+        let r = &x;           // --+-- 'a  |
+                              //   |       |
+        println!("r: {}", r); //   |       |
+                              // --+       |        // r, x は同じライフタイム内なので参照できる
+    }
+```
+
+ここまで読んでライフタイムについては理解できた。では「ライフタイムを指定する」とはどういうことか。そこで登場するのがライフタイムパラメータである。
+
+## 関数のライフタイム
+
+ライフタイムパラメータの話に進む前に、関数のライフタイムについて理解しておく必要がある。
+例えば2つの i32 の参照を受取り、大きいほうの値を返す関数を考える。
+
+```rust
+fn main() {
+    let x = 1;
+    let y = 2;
+    let z = greater(&x, &y);
+    println!("{}", z);
+}
+
+fn greater(x: &i32, y: &i32) -> &i32 {
+    if x > y {
+        return x;
+    }
+    y
+}
+```
+
+しかし、これはコンパイルエラーになる。まずはコンパイラのメッセージを見てみよう。
+
+```rust
+   Compiling playground v0.0.1 (/playground)
+error[E0106]: missing lifetime specifier
+ --> src/main.rs:8:33
+  |
+8 | fn greater(x: &i32, y: &i32) -> &i32 {
+  |               ----     ----     ^ expected named lifetime parameter
+  |
+  = help: this function's return type contains a borrowed value, but the signature does not say whether it is borrowed from `x` or `y`
+help: consider introducing a named lifetime parameter
+  |
+8 | fn greater<'a>(x: &'a i32, y: &'a i32) -> &'a i32 {
+  |           ++++     ++          ++          ++
+
+For more information about this error, try `rustc --explain E0106`.
+error: could not compile `playground` (bin "playground") due to 1 previous error
+```
+
+[https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=3b8e7d55a37f3a6a2b1efeb16ac7ecb6](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=3b8e7d55a37f3a6a2b1efeb16ac7ecb6)
+
+エラーメッセージの中にライフタイムパラメータを適用した実装がコンパイラによって書かれている。それを読むと、ライフタイムパラメータについても理解することができる。Rust のコンパイラは本当にすごい。
+
+> help: this function's return type contains a borrowed value, but the signature does not say whether it is borrowed from `x` or `y`
+
+"この関数の戻り値の型は借用した値が含まれているが、関数のシグネチャには `x` から借用したのか `y` から借用したのかが書かれていない。"
+
+どういうことか。`greater()` は参照 `&i32` を引数に2つ受取り、`x`, `y` どちらかを返す。とうぜん、型は同じく `&i32`、つまり `x` または `y` の参照だ。しかし、`x`, `y` どちらの引数の参照が返されるのかがコンパイル時点ではわからない。呼び出されるコンテキストに依存するためだ。そのためコンパイラはどちらの参照が返されるかを明示的に指定するように求めている。
+
+ライフタイムパラメータを導入することで、どちらの参照が返されるか指定することができる（というか指定しないとコンパイルは通らない）。
+
+## ライフタイムパラメータ
+
+ようやく本編まで来た。先の問題を解決するのがライフタイムパラメータだ。ライフタイムパラメータについて重要なことは、ライフタイムパラメータを明示したからといって、参照のライフタイムには作用しないこと。つまり参照の生存期間が変わるわけではないことだ。ライフタイムパラメータはあくまでコンパイラに対して、どの参照が返されるかを明示的に指定する、教えてあげるためのものである。先のコードをライフタイムパラメータを使って修正すると以下のようになる。ライフタイムパラメータはジェネリック同様、関数名の後に `<>` で囲んで記述する。引数は`i32`への参照なので記述する型は `&'a` になる。
+
+```rust
+fn greater<'a>(x: &'a i32, y: &'a i32) -> &'a i32 {
+    if x > y {
+        return x;
+    }
+    y
+}
+```
+[https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=114afc1bacf2a390331f6e4695baf0f5](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=114afc1bacf2a390331f6e4695baf0f5)
+
+`greater()` はライフタイムパラメータ `'a` を持ち、`x` と `y` はそれぞれ `'a` のライフタイムを持つ参照であり、戻り値も `'a` のライフタイムを持つ参照であるとコンパイラに教えているだけだ。`greater()` は `x`, `y` それぞれのライフタイムの範囲は知ることはない。同じライフタイムを持つ参照を2つ受取り、そのライフタイムを持った参照を返す、ということを知っているのみである。
+
+### なぜライフタイムパラメータが必要なのか
+
+関数が呼び出されるコンテキストによって関数の引数のライフタイムは異なる可能性がある。コンパイラが引数や戻り値のライフタイムを自力で推論することはできないため、プログラマの手によってライフタイムを指定する必要がある。
+
+## 構造体(struct)や列挙子(enum)のライフタイムパラメータ
+
+構造体や列挙子にもライフタイムパラメータを指定することができる。
+
+```rust
+struct ValueA<'a> {
+    x: &'a i32,
+}
+```
+
+```rust
+enum ValueB<'src> {
+    Num(i32),
+    Op(&'src str),
+    Block(Vec<Value<'src str>>)
+}
+```
+
+構造体や列挙子にライフタイムパラメータを指定することで、その構造体や列挙子が参照を持つことができる。ライフタイムパラメータはジェネリックと同様に、構造体や列挙子の名前の後に `<>` で囲んで記述する。ライフタイムパラメータは `'a` のようにアルファベットで表現することが一般的だが、他のジェネリックと同様に任意の名前をつけることができる。
+
+上記のコードでは `ValueA` のインスタンスは `x` フィールドで保持している参照よりも長生きしないことを表す。
+`ValueB` の場合,`ValueB<'src>` が文字列スライス `&'src str` を含む可能性があるため、ライフタイムパラメータが必要になっている。このライフタイムパラメータは、`ValueB` が参照している文字列が、その `ValueB` が存在している間、有効であることを保証している。
+
+```rust
+let op_str = "+";
+let value = ValueB::Op(op_str);
+```
+
+この場合、`op_str` への参照を持つ `value` は、参照する文字列がなくなってしまうと非常に困るため、ライフタイムパラメータによってこれを防御している。`op_str` のライフタイムは `value` のライフタイムよりも短くなることはなく、`value` は `op_str` を安全に利用できる。
+
+## メソッド定義時のライフタイムパラメータ
+
+以下は `ValueB` に対してメソッドを定義する例である。`impl` 後のライフタイム引数宣言と型名（ValueB）のあとにジェネリックなライフタイムパラメータを宣言することは必須だが、 self への参照についてはライフタイムを指定する必要はない。`self` は構造体や列挙子のインスタンスそのものであり、そのライフタイムはそれらのライフタイムと同じであるためである。
+
+```rust
+impl<'src> ValueB<'src> {
+    fn as_num(&self) -> i32 {
+        match self {
+            Self::Num(val) => *val,
+            _ => panic!("Value is not number"),
+        }
+    }
+
+    fn to_block(self) -> Vec<Value<'src>> {
+        match self {
+            Self::Block(block) => block,
+            _ => panic!("Value is not block"),
+        }
+    }
+}
+```
+
+## 静的ライフタイム
+
+`&'static` という特別なライフタイムがある。この参照はプログラム全体にわたって生存する。宣言された時点でプログラムが終了するまでの間、その参照が有効であることを示す。文字列リテラルやグローバル変数に対して使われることが多い気がする。
+
+```rust
+let s: &'static str = "static lifetime";
+```
+
+この文字列リテラルはバイナリに直接書き込まれる。そのため、プログラムが終了するまでの間、この文字列リテラルは有効になる。そう考えると全ての文字列リテラルはバイナリに直接書き込まれていることから `&'static` ライフタイムであるといえる。つまり `'& static` を乱用するとバイナリサイズも大きくなりオーバーヘッドが増えることも想像される。そのため参照がどの程度生存してほしいかはよく考え、用法用量を守ってプログラミングする必要がある。
+
+## その他
+
+### 所有権を持つ変数（参照を持たない変数）の場合
+
+所有権を持つ変数は明示的なライフタイムを持たない。それらのライフタイムはコンパイラによって最適化され、暗黙のライフタイム（スコープだと思う）で管理されている。少なくともプログラミングによってライフタイムを明示的に指定する必要はない。
+所有権を持つ変数はメモリ上に確保されたデータを所有する。
+
+### おまけ
+
+Rust のコンパイラが発するエラーメッセージに頻出する英単語に `borrow`, `borrowed` がある。つい「借りた」、「貸した」とパブロフの犬の如く脊髄反射して脳内変換してしまいがちだったが、Rust のコンパイラ上で読むそれは常に「借用した」、「借用された」と翻訳することを意識している。そうすることで公式ドキュメントや他参考文献との整合性が取れて理解が進むことがある。
+
+## 参考文献
+
+- [参照と借用](https://doc.rust-jp.rs/book-ja/ch04-02-references-and-borrowing.html)
+- [ジェネリックなデータ型](https://doc.rust-jp.rs/book-ja/ch10-01-syntax.html)
+- [ライフタイムで参照を検証する](https://doc.rust-jp.rs/book-ja/ch10-03-lifetime-syntax.html)
