@@ -1,6 +1,6 @@
 import { Post } from 'contentlayer/generated'
 import { remark } from 'remark'
-import { MDX } from 'contentlayer/core'
+import { MDX } from 'contentlayer2/core'
 import remarkHtml from 'remark-html'
 import { select } from 'unist-util-select'
 
