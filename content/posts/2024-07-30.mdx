@@ -48,7 +48,7 @@ error: could not compile `playground` (bin "playground") due to 1 previous error
 ```
 
 Rust では変数のスコープを抜けたあとで、その変数に対する参照が生き残ることはできない。
-ライフタイムとは参照が有効である期間のことで、ライフタイム注釈とはそのライフタイムを指定するものである。
+ライフタイムとは参照が有効である期間のことで、ライフタイムパラメータとはそのライフタイムを指定するものである。
 これは公式ドキュメントにある[借用精査機](https://doc.rust-jp.rs/book-ja/ch10-03-lifetime-syntax.html#%E5%80%9F%E7%94%A8%E7%B2%BE%E6%9F%BB%E6%A9%9F)の pseudo コードを参照するとわかりやすい。
 
 ```rust
