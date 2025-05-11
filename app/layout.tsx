@@ -47,7 +47,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="ja">
+    <html suppressHydrationWarning={true} lang="ja">
       <body
         className={`antialiased min-h-screen bg-white dark:bg-cloudflare-darktheme-bg text-slate-900 dark:text-cloudflare-darktheme-font ${inter.className}`}
       >
