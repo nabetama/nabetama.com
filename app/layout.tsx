@@ -3,9 +3,8 @@ import './global.css'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from 'components/theme-provider'
 import React from 'react'
-import Footer from 'components/footer'
-import Header from 'components/header'
 import { SITE_DOMAIN } from '@/constants'
+import ClientLayout from 'components/client-layout'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -52,11 +51,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         className={`antialiased min-h-screen bg-white dark:bg-cloudflare-darktheme-bg text-slate-900 dark:text-cloudflare-darktheme-font ${inter.className}`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div className="max-w-2xl mx-auto py-10 px-4">
-            <Header />
-            <main>{children}</main>
-            <Footer />
-          </div>
+          <ClientLayout>{children}</ClientLayout>
         </ThemeProvider>
       </body>
     </html>
