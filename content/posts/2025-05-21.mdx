@@ -1,0 +1,177 @@
+---
+title: "Tauri v2 × React デスクトップアプリで「外部リンクをデフォルトブラウザで開く」実装とその理由"
+date: "2025-05-21"
+description: "Tauri v2 と React を使ったデスクトップアプリを作っていて思ったこと"
+lastModDate:
+tags: []
+---
+
+## 概要
+
+Tauri v2 と React でデスクトップアプリを作っている。
+**アプリ内の外部リンクをアプリ内WebViewではなく、システムのデフォルトブラウザで開く方法**について、
+実装例・技術的背景をもとにプラクティスをメモしておく。
+
+---
+
+1. なぜ「外部リンクをデフォルトブラウザで開く」必要があるのか
+2. Tauri v2での外部リンク制御
+3. Reactでの実装例（ref, useEffect）
+4. 実装
+5. まとめ
+
+---
+
+## なぜ「外部リンクをデフォルトブラウザで開く」必要があるのか
+
+Tauri のデスクトップアプリでは、
+リンク（`<a href="...">`）をクリックすると（開発者が何も気にせずに作った場合）
+**アプリ内のWebView**でリンク先ウェブサイトが開かれてしまう。
+これは嬉しくない。
+
+- セキュリティ上の懸念（外部サイトをアプリ内で開くのは危険。ブラウザに任せたい）
+- ユーザー体験の低下（外部サイトは普段使いのブラウザで開きたい）
+- ブラウザの拡張機能やログイン状態が使えない
+- ブラウザのバックボタンで戻れない
+- アプリ内で開くとブラウザの履歴に残らない
+- とはいえアプリ内ブラウザを実装するのは明らかに大変
+
+こうした理由から、**外部リンクはシステムのデフォルトブラウザで開く**のが望ましいはずだ。
+
+---
+
+## Tauri v2での外部リンク制御
+
+Tauri v2では、`@tauri-apps/plugin-opener` の `openUrl` 関数を使うことで、
+外部URLをシステムのデフォルトブラウザで開くことができる。
+詳しくは[公式ドキュメント](https://v2.tauri.app/reference/javascript/opener/#openurl)を参照。
+
+```ts
+import { openUrl } from '@tauri-apps/plugin-opener';
+
+await openUrl('https://example.com');
+await openUrl('https://github.com/tauri-apps/tauri', 'firefox');
+```
+
+第二引数にアプリケーションを指定することもできるが、
+指定しなければ現在指定しているデフォルトブラウザを利用する。
+
+---
+
+## Reactでの実装例（ref, useEffect）
+
+Tauri に限った話ではないと思うが Reactでは、`ref`と`useEffect`を使うことで、
+ネイティブイベントを安全に扱うことができる。
+
+### refとは？
+
+そもそも `ref` とはなにか。
+
+- Reactの`ref`は、**DOMノードへの参照**を取得するための仕組み。
+- 通常、Reactは仮想DOMで管理されているため、直接DOMノードにアクセスすることはないが、
+  `ref`を使うことで、特定のDOM要素を直接操作することができる。
+
+参考: [公式ドキュメント](https://ja.react.dev/learn/referencing-values-with-refs)
+
+### なぜrefを使うのか？
+
+仮想DOMではないDOMノードを直接操作、今回の場合は `<a>` タグクリック時の
+イベントハンドラを登録する必要があったからだ。
+今回のケースでは Markdown プレビューを実装しており、そこには下記の仕様があった。
+
+- プレビューでは `dangerouslySetInnerHTML` でHTMLを直接描画している。
+- ReactのonClickなどのイベントハンドラは、直接描画されたHTML内の要素（例: `<a>`タグ）には作用しない。
+- そのため、**refでDOMを取得し、addEventListenerでネイティブイベントを捕捉**する必要があった。
+
+### なぜuseEffectで実装するのか？
+
+これは公式ドキュメントや有識者の記事でもよく出てくる話だと思う。
+
+> useEffect は、コンポーネントを外部システムと同期させるための React フックです。
+参考: [react公式](https://ja.react.dev/reference/react/useEffect)
+
+副作用とは、React コンポーネントの外側で起きる操作のこと。
+例えば、APIリクエスト、ローカルストレージへのアクセス、DOM操作などが挙げられる。
+要は関数への入力 → 関数の出力 の間で、その関数の外側で起きる操作のことだ。
+
+> useEffectを使う際の原則の一つとして、クリーンアップ関数の無いuseEffectは不適格である
+参考: [過激派が教える！　useEffectの正しい使い方](https://zenn.dev/uhyo/articles/useeffect-taught-by-extremist)
+
+こちらの記事では、合わせて `useEffect` を使っても良いプラクティスを紹介していた。そして
+「イベントハンドラを登録する系」は
+
+> 「許容度: 😃 文句なし。望ましいuseEffectの使い方」
+
+とされている。
+
+今回は a タグのクリックイベントを扱うので、`useEffect` で管理するのが適切と判断した。
+もう少し詳細に書くと以下が useEffect の責務になる。
+
+- refで取得したDOMノードへのイベントリスナー登録及び解除。
+- コンポーネントのマウント時にイベントリスナーを登録し、アンマウント時には解除することで、メモリリークや多重登録を防ぐ。
+
+---
+
+## 実装
+
+```tsx
+import React, { useEffect, useRef } from 'react';
+import { marked } from 'marked';
+import { openUrl } from '@tauri-apps/plugin-opener';
+
+type MarkdownPreviewProps = {
+  markdown: string;
+};
+
+const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'A') {
+        const href = (target as HTMLAnchorElement).href;
+        if (href && !href.startsWith('file://')) {
+          e.preventDefault();
+          openUrl(href);
+        }
+      }
+    };
+    const el = ref.current;
+    if (el) el.addEventListener('click', handler);
+    return () => {
+      if (el) el.removeEventListener('click', handler);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="markdown-preview"
+      style={{ flex: 1, padding: '1rem', background: '#f9f9f9', overflowY: 'auto', minHeight: 0 }}
+      dangerouslySetInnerHTML={{ __html: marked(markdown) }}
+    />
+  );
+};
+```
+
+### ポイント
+
+- `ref` でプレビューDOMを取得
+- `useEffect` でクリックイベントを登録・解除
+- `<a>`タグクリック時に `openUrl` で外部ブラウザを起動
+
+---
+
+## まとめ
+
+- Tauri v2アプリでMarkdownプレビュー内のリンクを外部ブラウザで開くには、`@tauri-apps/plugin-opener` の `openUrl` を使う
+- Reactでは、`ref`と`useEffect`でネイティブイベントを安全に扱うのがベストプラクティス
+
+---
+
+## 関連キーワード
+
+- Tauri 外部リンク ブラウザ
+- React Markdown dangerouslySetInnerHTML イベント
+- Tauri plugin-opener openUrl
