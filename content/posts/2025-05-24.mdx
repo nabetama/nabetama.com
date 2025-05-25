@@ -1,0 +1,154 @@
+---
+title: "Tauri 2.0 デスクトップアプリ開発メモ"
+date: "2025-05-24"
+description: "Tauri 2.0 でのデスクトップアプリ開発メモ"
+lastModDate:
+tags: []
+---
+
+## はじめに
+
+React, Tauri 2.0 でデスクトップアプリを引き続き開発している。
+自分が使いたいものを作る。それが今回のモチベーションだ。
+
+ただコードだけ書いていくと、翌日になると全て忘れているので開発日誌のようなものも書こうと思い、
+機能を作ったら簡単に振り返ってみることにした。
+
+## 作っているもの
+
+Markdown エディタ。画面は下記の3ペイン構成。
+
+- ディレクトリツリー
+- エディタ
+- プレビュー
+
+## 作った機能
+
+作った機能を列挙し、メモを残しておく。
+
+### レイアウトのリサイズ
+
+各ペインをドラッグで自由にリサイズ出来るようにした。
+これはreact-split-paneを使っている。
+最初はreact-splitを使っていたが、
+グリッドの挙動にむちゃくちゃ不満があった。
+というか自分の技術力の問題により、どうやっても右と中央のペイン間のリサイズが実装できなかったので
+react-split-paneに切り替えた。
+
+https://github.com/tomkp/react-split-pane
+
+ここは現段階では、とりあえずリサイズできればヨシとして、まだほぼ開発していない。
+
+### ディレクトリツリー
+
+左ペインはディレクトリーツリーを常に表示する。
+現在実装済みの主な機能は下記。
+
+- 開いているディレクトリ名を上部に表示
+- ディレクトリは折りたたみ可能
+- Cmd+Oでディレクトリを開く
+- ディレクトリ → ファイルの順に表示し、日本語や数字も自然に並ぶようにした。
+
+ソートは泥臭くやっている。
+
+```ts
+const sortedNodes = [...nodes].sort((a, b) => {
+    if (a.children && !b.children) return -1;
+    if (!a.children && b.children) return 1;
+    return (a.name || '').localeCompare(b.name || '', 'ja', { numeric: true, sensitivity: 'base' });
+});
+```
+
+### フォント
+
+Fira Code が好きなのでエディタのフォントはそれに統一することにした。
+どうやるのかわからなかったので
+woff2 ファイルをダウンロードしてきて woff2 を埋め込んだ。
+
+```css
+@font-face {
+  font-family: "FiraCode";
+  src: url("./assets/woff2/FiraCode-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "FiraCode";
+  src: url("./assets/woff2/FiraCode-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+...
+...
+```
+
+```css
+body,
+.directory-tree,
+.markdown-preview,
+.Pane {
+  font-family: "FiraCode", "Segoe UI", "Meiryo", sans-serif !important;
+}
+```
+
+### CSS 整理
+
+React アプリケーションにおけるCSSの管理方法はなにが良いのか、よくわからない。
+とりあえずCSS-in-JS で書いている。
+Tailwind への移行を考えているが、まだ先で良い。
+移行するときは cursor にやってもらう予定。
+
+### コンテキストメニューの実装
+
+ディレクトリツリーで右クリックすると、ファイル/フォルダごとに異なるメニュー（新規作成、リネーム、削除など）が出るようにした。
+メニューを表示するときはクリックした座標を取得し、その座標にメニューを表示するようにしている。
+
+```ts
+const [contextMenu, setContextMenu] = useState<
+    | { x: number; y: number; type: 'dir' | 'file'; path: string }
+    | null
+  >(null);
+```
+
+```ts
+const handleContextMenu = (
+  e: React.MouseEvent,
+  type: 'dir' | 'file',
+  path: string
+) => {
+  // remove selection
+  window.getSelection()?.removeAllRanges();
+  e.preventDefault();
+  setContextMenu({ x: e.clientX, y: e.clientY, type, path });
+};
+```
+
+メニューを閉じるときに `null` をパラメータに渡すのは雑な気がしているが後でどうにかする。
+
+### ファイル/フォルダの操作
+
+UI上からある程度のファイル操作がしたいので最初にファイルの新規作成を実装してみた。
+先のコンテキストメニューにイベントハンドラーを登録し、その中で Tauri の API `save`, `writeTextFile` を呼び出す。
+その後、作成したファイルをディレクトリツリーに反映している。
+`dirPath` はエディタで開いているディレクトリのパスであり、これは state として保持している。
+
+```ts
+const handleCreateFile = async () => {
+  const fileName = await save({
+      filters: [{ name: 'Markdown files', extensions: ['md'] }],
+  })
+  if (!fileName) return;
+  await writeTextFile(fileName, '');
+  // update tree from root
+  if (dirPath) {
+      const mdTree = await getMarkdownTree(dirPath);
+      setTree(mdTree);
+    }
+};
+```
+
+## 進捗
+
+<blockquote class="imgur-embed-pub" lang="en" data-id="a/xshxXhp"  ><a href="//imgur.com/a/xshxXhp">250524 md editor</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
