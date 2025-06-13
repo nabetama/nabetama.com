@@ -1,0 +1,86 @@
+---
+title: "dumb-init についての理解メモ"
+date: "2025-06-13"
+description: "dumb-init とは"
+lastModDate:
+tags: []
+---
+
+## dumb-init とは
+
+Yelp社が開発・メンテしているOSSプロジェクト。
+
+https://github.com/Yelp/dumb-init
+
+README の冒頭に dumb-init について端的に記載されている。
+
+> dumb-init is a simple process supervisor and init system designed to run as PID 1 inside minimal container environments (such as Docker)
+
+dumb-initは、最小限のコンテナ環境（Dockerなど）でPID 1として動作するように設計された、シンプルなプロセススーパーバイザーとinitシステムです。
+
+> Lightweight containers have popularized the idea of running a single process or service without normal init systems like systemd or sysvinit. However, omitting an init system often leads to incorrect handling of processes and signals, and can result in problems such as containers which can't be gracefully stopped, or leaking containers which should have been destroyed.
+
+軽量コンテナは、systemdやsysvinitのような通常のinitシステムなしで単一のプロセスやサービスを実行するというアイデアを広めた。しかし、initシステムを省略すると、プロセスやシグナルの扱いが不正確になることが多く、コンテナをスムーズに停止できなかったり、破棄すべきコンテナが漏れてしまう問題が発生する可能性がある。
+
+## PID 1の課題
+
+いわゆる軽量コンテナ技術、特にDockerのコアコンセプトである軽量性と効率性を実現するには以下が必要だった。
+
+- 各コンテナが単一のプロセスやサービスを実行すること
+- OSが持つsystemdなどのinitプロセスを省略すること
+
+このような最小限のコンテナ構成によって、新たに予期せぬ課題が引き起こされるケースが dumb-init のREADMEに書かれているような、initがないことでプロセスやシグナルのハンドリングミスが発生し、コンテナの管理に不整合が発生することにつながる。
+つまり対処すべき主な問題と対処方法は以下のようなものになる。
+
+1. プロセスやシグナルのハンドリングミス
+    - シグナル処理の不正確さを排除する
+1. ゾンビプロセスを回収する
+    - コンテナ管理を正しく行う
+
+## 前提知識: PID 1 (initプロセス)の役割
+
+LinuxにおいてPID 1は特別な意味を持ったプロセスである。
+PID 1　はsystemd(init)プロセスに割り当てられる。PID 1はLinuxシステム上で最初に起動するプロセスであり、
+全てのプロセスの親プロセスである。
+
+ではコンテナ環境におけるinitと従来の `init` それは何が異なるのか。
+
+従来のinitシステムは、システムのサービス（SSHやWebサーバプロセスなど）の起動、停止、再起動、プロセス監視など、
+プロセス管理を担当している。その中でも特に重要な役割が、ゾンビプロセスの回収（Reaping）だ。
+
+あるプロセスAが終了すると、その親プロセスは `wait()` システムコールを実行し、子プロセスの終了ステータスを回収しなくてはならない。
+このプロセスが終了してから終了ステータスが回収されるまで、プロセスAはゾンビプロセスとしてプロセスのリストに残る。また、もし
+親プロセスの方が子プロセスよりも先に終了した時は、その子プロセスはカーネルによってPID1の子プロセスになる。
+`init` プロセスにはゾンビプロセスを定期的に回収する責任があり、シグナルハンドリングを行って適切にプロセスを処理している。
+
+## 軽量コンテナにおけるPID 1
+
+軽量コンテナでは通常1つ（単一）のアプリケーションが直接PID 1として実行される。
+なぜか？ これは systemd などの init プロセスとしてフル機能のシステムをコンテナに含めないことで軽量化をしたい意図があるからだ。
+**軽量** コンテナはイメージサイズが小さいからこそ起動時間を短縮できる。しかしながら構成を「最小限」にして効率性を追求したことで、
+今までLinuxで `init` によってコントロールしいたプロセスのライフサイクル管理、シグナルのハンドリングをコンテナで実現するのは
+難しくなりそうということはぼんやりと想像できる。
+ではコンテナにおけるシグナル処理はどう難しくなるか。
+
+Dockerホストからコンテナにシグナルを送信する方法
+
+Docker のホストから `docker stop <container id>` コマンドを実行すると、Docker デーモンがコンテナの PID 1 にプロセスの終了を要求する。
+いわゆる graceful shutdown というもので具体的には `SIGTERM` シグナルを送ることを指す。
+Dockerデーモンは `SIGTERM` を送信した後、デフォルトで10秒間プロセス終了を待つタイムアウトを設ける。
+この期間内にプロセスが終了しない場合は `SIGKILL` を送信し、プロセスを強制的に終了させる。
+
+`SIGTERM`, `SIGKILL` この差が問題を引き起こす。
+
+`SIGTERM` を受け取った場合、プロセス（アプリケーション）は自身が開いているファイルやデータベースへのコネクションを閉じたり、
+処理で利用していた一時ファイルを削除したりと、クリーンアップ処理を実行する猶予がある。
+一方、 `SIGKILL` はそれらの猶予が与えられないため、データ破損のリスクを伴う。
+結果的に、`SIGKILL` を受けるケースは頻繁に発生する。これによりステートフルなアプリケーションはデータ整合性が破壊されることになる
+（余談だが私も誤って手動で本番プロセスに対して `SIGKILL` をしたことで苦い経験をしたことがある）。
+
+
+## 参考
+
+- PID1の重要性や役割について
+    - https://daveiscoding.hashnode.dev/why-do-you-need-an-init-process-inside-your-docker-container-pid-1
+- なぜ10秒かはよくわからない。誰かが最初にそう決めたのだろう
+    - https://github.com/moby/moby/discussions/45101
