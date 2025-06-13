@@ -1,21 +1,21 @@
 ---
-title: "Tauri v2 × React デスクトップアプリで「外部リンクをデフォルトブラウザで開く」実装とその理由"
+title: "Tauri 2.0 × React デスクトップアプリで「外部リンクをデフォルトブラウザで開く」実装とその理由"
 date: "2025-05-21"
-description: "Tauri v2 と React を使ったデスクトップアプリを作っていて思ったこと"
+description: "Tauri 2.0 と React を使ったデスクトップアプリを作っていて思ったこと"
 lastModDate:
 tags: []
 ---
 
 ## 概要
 
-Tauri v2 と React でデスクトップアプリを作っている。
+Tauri 2.0 と React でデスクトップアプリを作っている。
 **アプリ内の外部リンクをアプリ内WebViewではなく、システムのデフォルトブラウザで開く方法**について、
 実装例・技術的背景をもとにプラクティスをメモしておく。
 
 ---
 
 1. なぜ「外部リンクをデフォルトブラウザで開く」必要があるのか
-2. Tauri v2での外部リンク制御
+2. Tauri 2.0 での外部リンク制御
 3. Reactでの実装例（ref, useEffect）
 4. 実装
 5. まとめ
@@ -40,9 +40,9 @@ Tauri のデスクトップアプリでは、
 
 ---
 
-## Tauri v2での外部リンク制御
+## Tauri 2.0 での外部リンク制御
 
-Tauri v2では、`@tauri-apps/plugin-opener` の `openUrl` 関数を使うことで、
+Tauri 2.0 では、`@tauri-apps/plugin-opener` の `openUrl` 関数を使うことで、
 外部URLをシステムのデフォルトブラウザで開くことができる。
 詳しくは[公式ドキュメント](https://v2.tauri.app/reference/javascript/opener/#openurl)を参照。
 
@@ -165,7 +165,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
 
 ## まとめ
 
-- Tauri v2アプリでMarkdownプレビュー内のリンクを外部ブラウザで開くには、`@tauri-apps/plugin-opener` の `openUrl` を使う
+- Tauri 2.0 アプリでMarkdownプレビュー内のリンクを外部ブラウザで開くには、`@tauri-apps/plugin-opener` の `openUrl` を使う
 - Reactでは、`ref`と`useEffect`でネイティブイベントを安全に扱うのがベストプラクティス
 
 ---
