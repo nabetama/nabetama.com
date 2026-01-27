@@ -22,3 +22,4 @@ const pages = defineCollection({
 });
 
 export const collections = { posts, pages };
+
