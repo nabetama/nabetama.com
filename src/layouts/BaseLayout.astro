@@ -25,7 +25,6 @@ const {
 
 const pageTitle = title ? `${title} | ${SITE_DOMAIN}` : SITE_DOMAIN;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const containerClass = wide ? 'max-w-6xl' : 'max-w-2xl';
 ---
 
 <!doctype html>
@@ -71,11 +70,13 @@ const containerClass = wide ? 'max-w-6xl' : 'max-w-2xl';
   <body
     class="antialiased min-h-screen bg-white dark:bg-darktheme-bg text-slate-900 dark:text-darktheme-font"
   >
-    <div class:list={[containerClass, 'mx-auto py-10 px-4']}>
+    <div class="max-w-5xl mx-auto py-10 px-4">
       <Header />
-      <main>
-        <slot />
-      </main>
+    </div>
+    <main>
+      <slot />
+    </main>
+    <div class="max-w-5xl mx-auto px-4">
       <Footer />
     </div>
   </body>
