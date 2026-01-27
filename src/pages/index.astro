@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { compareDesc, format } from 'date-fns';
+
+const EXCLUDE_POST_ID = '1999-01-01';
+
+const allPosts = await getCollection('posts');
+const posts = allPosts
+  .filter((post) => post.id !== EXCLUDE_POST_ID)
+  .sort((a, b) => compareDesc(new Date(a.data.date), new Date(b.data.date)));
+---
+
+<BaseLayout>
+  <div class="prose dark:prose-invert">
+    {
+      posts.slice(0, 6).map((post) => (
+        <article class="mt-10">
+          <time
+            class="dark:text-gray-400 no-underline mt-3 p-0 block text-[.8rem]"
+            datetime={post.data.date}
+          >
+            {format(new Date(post.data.date), 'yyyy年MM月dd日')}
+          </time>
+          <a class="text-xl hover:opacity-70" href={`/posts/${post.id}/`}>
+            {post.data.title}
+          </a>
+          {post.data.description && <p class="mt-2">{post.data.description}</p>}
+        </article>
+      ))
+    }
+    <article class="mt-10">
+      <a class="text-xl" href="/posts">⇢すべての記事を見る</a>
+    </article>
+  </div>
+</BaseLayout>

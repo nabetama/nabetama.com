@@ -22,15 +22,11 @@ Hugo ではなく、wercker の使い方が古い。
 
 Application を作ったら画面右上にある Manage Workflows へ
 
-![img.png](img.png)
-
 左カラムの Workflows をクリック。たぶん`build`しかないと思う。
 
 #### Add new pipeline
 
 下の方の Pipelines ってところで Add new pipeline
-
-![img_1.png](img_1.png)
 
 Name はなんでも OK だが、YML Pipeline name は下記の yaml の場合,deploy にしないと定義されてないってエラーになるはず
 
@@ -38,19 +34,13 @@ HookType は default でいい。Git push を選ぶと文字通り push に hook
 
 ビルドされてない Hugo の中身が deploy されてしまう。
 
-![img_2.png](img_2.png)
-
 #### Environment variables
 
 GIT_TOKEN を設定する. [github の settings](https://github.com/settings/tokens)で作っておこう。
 
-![img_3.png](img_3.png)
-
 ※画像では既に設定済みになっている
 
 pipeline の追加
-
-![img_4.png](img_4.png)
 
 +を押すとさきほど作った Pipeline を選択できるようになっているので、追加する。
 

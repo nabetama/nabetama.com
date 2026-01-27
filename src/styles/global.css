@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-cloudflare-darktheme-bg: #1d1d1d;
+  --color-cloudflare-darktheme-font: #d9d9d9;
+}
+
+html {
+  font-size: calc(1rem + 0.5vw);
+  font-family: sans-serif;
+}
+
+a:hover {
+  color: rgb(203 213 225 / var(--tw-text-opacity, 1));
+}
+
+img {
+  max-width: 100%;
+  margin: 0 auto;
+  height: auto;
+}
+
+p {
+  overflow-wrap: break-word;
+}
