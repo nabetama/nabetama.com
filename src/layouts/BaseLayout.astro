@@ -8,6 +8,7 @@ interface Props {
   description?: string;
   ogImage?: string;
   ogType?: 'website' | 'article';
+  wide?: boolean;
 }
 
 const SITE_DOMAIN = 'nabetama.com';
@@ -19,10 +20,12 @@ const {
   description = defaultDescription,
   ogImage = defaultOgImage,
   ogType = 'website',
+  wide = false,
 } = Astro.props;
 
 const pageTitle = title ? `${title} | ${SITE_DOMAIN}` : SITE_DOMAIN;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const containerClass = wide ? 'max-w-6xl' : 'max-w-2xl';
 ---
 
 <!doctype html>
@@ -66,9 +69,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </script>
   </head>
   <body
-    class="antialiased min-h-screen bg-white dark:bg-cloudflare-darktheme-bg text-slate-900 dark:text-cloudflare-darktheme-font"
+    class="antialiased min-h-screen bg-white dark:bg-darktheme-bg text-slate-900 dark:text-darktheme-font"
   >
-    <div class="max-w-2xl mx-auto py-10 px-4">
+    <div class:list={[containerClass, 'mx-auto py-10 px-4']}>
       <Header />
       <main>
         <slot />

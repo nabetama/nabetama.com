@@ -2,8 +2,11 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-cloudflare-darktheme-bg: #1d1d1d;
-  --color-cloudflare-darktheme-font: #d9d9d9;
+  --color-darktheme-bg: #0a0a0a;
+  --color-darktheme-font: #e5e5e5;
+  --color-darktheme-muted: #a3a3a3;
+  --color-darktheme-border: #262626;
+  --color-darktheme-card: #171717;
 }
 
 html {
@@ -23,4 +26,23 @@ img {
 
 p {
   overflow-wrap: break-word;
+}
+
+/* Blog card hover effects */
+.blog-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.blog-card:hover {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .blog-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  .blog-card:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
 }
