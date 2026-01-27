@@ -1,0 +1,45 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+import { getCollection, render } from 'astro:content';
+import Image from '@/components/Image.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const SITE_DOMAIN = 'nabetama.com';
+const defaultOgImage = `https://${SITE_DOMAIN}/default_og_image.jpg`;
+
+// Extract first image from post body for OG image
+function extractFirstImage(rawContent: string): string | null {
+  const imgMatch = rawContent.match(/<Image\s+src="([^"]+)"/);
+  if (imgMatch) {
+    return imgMatch[1];
+  }
+  const mdImgMatch = rawContent.match(/!\[.*?\]\(([^)]+)\)/);
+  if (mdImgMatch) {
+    return mdImgMatch[1];
+  }
+  return null;
+}
+
+const firstImage = extractFirstImage(post.body || '');
+const ogImage = firstImage || defaultOgImage;
+---
+
+<PostLayout
+  title={post.data.title}
+  date={post.data.date}
+  lastModDate={post.data.lastModDate}
+  description={post.data.description}
+  ogImage={ogImage}
+>
+  <Content components={{ Image }} />
+</PostLayout>
