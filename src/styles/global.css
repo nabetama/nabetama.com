@@ -46,3 +46,17 @@ p {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   }
 }
+
+/* 埋め込みコンテンツの中央寄せ */
+iframe,
+blockquote.imgur-embed-pub {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* imgur埋め込み（インラインスタイル上書き） */
+iframe[class*="imgur-embed-iframe-pub"] {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
