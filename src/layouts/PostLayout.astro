@@ -1,0 +1,39 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { format } from 'date-fns';
+
+interface Props {
+  title: string;
+  date: string;
+  lastModDate?: string | null;
+  description?: string;
+  ogImage?: string;
+}
+
+const { title, date, lastModDate, description, ogImage } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={ogImage} ogType="article">
+  <article class="py-6 prose dark:prose-invert dark:text-gray-200">
+    <time
+      class="dark:text-gray-400 no-underline my-3 p-0 inline-block text-[.8rem]"
+      datetime={date}
+    >
+      公開: {format(new Date(date), 'yyyy年MM月dd日')}
+    </time>
+    {
+      lastModDate && (
+        <time
+          class="dark:text-gray-400 no-underline mt-3 ml-3 p-0 inline-block text-[.8rem]"
+          datetime={lastModDate}
+        >
+          更新: {format(new Date(lastModDate), 'yyyy年MM月dd日')}
+        </time>
+      )
+    }
+    <h1 class="mb-2 text-3xl">{title}</h1>
+    {description && <p class="text-base mt-0 text-slate-700 dark:text-slate-400">{description}</p>}
+    <hr class="my-4" />
+    <slot />
+  </article>
+</BaseLayout>
