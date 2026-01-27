@@ -11,7 +11,8 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "write": "node scripts/write-post.js"
   },
   "dependencies": {
     "astro": "^5.2.5",
