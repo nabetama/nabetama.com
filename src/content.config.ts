@@ -9,6 +9,7 @@ const posts = defineCollection({
     lastModDate: z.coerce.string().nullable().optional(),
     description: z.string().optional(),
     tags: z.array(z.string()).optional(),
+    thumbnail: z.string().optional(),
   }),
 });
 
@@ -21,3 +22,4 @@ const pages = defineCollection({
 });
 
 export const collections = { posts, pages };
+
