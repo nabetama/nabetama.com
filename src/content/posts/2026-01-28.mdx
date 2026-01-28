@@ -1,0 +1,193 @@
+---
+title: "Blog を Next.js/Vercel から Astro/Cloudflare Pages に移行した"
+date: "2026-01-28"
+description: "技術スタックを Cloudflare に統一した"
+lastModDate:
+tags: ["astro", "cloudflare", "nextjs"]
+thumbnail: "https://i.imgur.com/Dk8dRRX.jpeg"
+---
+
+しばらく Next.js/Vercel で運用していた個人ブログを、Astro/Cloudflare Pages に移行した。
+
+## 移行の背景
+
+### MDX と contentlayer の苦しみ
+
+Next.js で MDX を使ったブログを運用していたが、contentlayer のサポートが厳しい状況になっていた。
+contentlayer は開発が停滞しており、Next.js のバージョンアップに追従できなくなっていた。
+
+一方、Astro は MDX を第一級でサポートしている。
+`@astrojs/mdx` インテグレーションを追加するだけで、すぐに使い始められる。
+
+```javascript
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  site: 'https://nabetama.com',
+  integrations: [mdx(), sitemap()],
+  output: 'static',
+  vite: {
+    plugins: [tailwindcss()],
+  },
+});
+```
+
+### SSG に Next.js はリッチすぎる
+
+正直なところ、Next.js への移行は勉強目的だった。
+しかし実際に運用してみると、SSG しか使わない個人ブログには明らかにオーバースペックだった。
+
+Server Components、App Router、Streaming、ISR...
+Next.js が提供する機能のほとんどを使っていなかった。
+静的サイトを生成してホスティングするだけなのに、フレームワークの複雑さだけが残っていた。
+
+Astro は「コンテンツ重視のウェブサイト」に特化している。
+SSG がデフォルトであり、必要なときだけ Islands Architecture でインタラクティブな要素を追加できる。
+このブログにはぴったりだった。
+
+### Cloudflare への統一
+
+ドメインも DNS も Cloudflare で管理している。
+ホスティングも Cloudflare Pages に統一することで、管理が楽になった。
+無料枠も十分で、エッジネットワークによる配信速度も申し分ない。
+
+## Astro の Content Collections
+
+Astro の Content Collections は、型安全なコンテンツ管理を実現してくれる。
+Zod でスキーマを定義すると、frontmatter の型チェックが効く。
+
+```typescript
+// src/content.config.ts
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
+const posts = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/posts' }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    lastModDate: z.coerce.string().nullable().optional(),
+    description: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    thumbnail: z.string().optional(),
+  }),
+});
+
+export const collections = { posts };
+```
+
+記事の取得も直感的だ。
+
+```astro
+---
+// src/pages/posts/[...slug].astro
+import PostLayout from '@/layouts/PostLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<PostLayout title={post.data.title} date={post.data.date}>
+  <Content />
+</PostLayout>
+```
+
+RSS フィードも `@astrojs/rss` で簡単に生成できる。
+
+```typescript
+// src/pages/feed.xml.ts
+import rss from '@astrojs/rss';
+import type { APIContext } from 'astro';
+import { getCollection } from 'astro:content';
+
+export async function GET(context: APIContext) {
+  const posts = await getCollection('posts');
+
+  return rss({
+    title: 'nabetama.com',
+    description: 'nabetama が日々の生活をメモするウェブサイト',
+    site: context.site!,
+    items: posts.map((post) => ({
+      title: post.data.title,
+      pubDate: new Date(post.data.date),
+      description: post.data.description,
+      link: `/posts/${post.id}/`,
+    })),
+  });
+}
+```
+
+## 移行作業
+
+移行作業は [Claude Code](https://docs.anthropic.com/en/docs/claude-code) にほぼ任せた。
+
+既存の Next.js プロジェクトから Astro プロジェクトへの書き換え、コンテンツの移行、ビルド設定の調整などを Claude Code に任せた。
+MDX ファイルの frontmatter は若干の調整が必要だったが、本文はほぼそのまま移行できた。
+
+一方、新しいデザインの調整はほぼ自分で書いた。
+デザインの「良し悪し」は主観的なものであり、ほぼ自分しか見てないような零細個人サイトだし、
+何より自分がCSSスキルが低いので、ここで少しでも勉強したい。
+
+## 移行して良かったこと
+
+これまで実装していた機能はすべて満たせている。
+
+- MDX による記事執筆
+- RSS フィード生成
+- サイトマップ生成
+- OGP 画像の設定
+- ダークモード対応
+- レスポンシブデザイン
+
+また、移行を機にパンくずリストを追加した。
+記事ページでの現在位置がわかりやすくなった。
+
+```astro
+<!-- src/layouts/PostLayout.astro -->
+<nav class="text-sm mb-6">
+  <ol class="flex items-center gap-2 text-gray-500 dark:text-darktheme-muted">
+    <li>
+      <a href="/" class="hover:text-gray-900 dark:hover:text-white transition-colors">Home</a>
+    </li>
+    <li class="text-gray-400 dark:text-gray-600">&gt;</li>
+    <li>
+      <a href="/posts" class="hover:text-gray-900 dark:hover:text-white transition-colors">Blog</a>
+    </li>
+    <li class="text-gray-400 dark:text-gray-600">&gt;</li>
+    <li class="text-gray-700 dark:text-gray-300 truncate max-w-xs">{title}</li>
+  </ol>
+</nav>
+```
+
+さらに、frontmatter に `tags` フィールドを用意しておきながら全く活用していなかったので、今回トップページの記事カードにタグを表示するようにした。
+
+```astro
+<!-- src/pages/index.astro -->
+{post.data.tags && post.data.tags.length > 0 && (
+  <span class="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 mb-2 self-start">
+    {post.data.tags[0]}
+  </span>
+)}
+```
+
+加えて、以下のメリットがあった。
+
+- **ビルドが速い**: 開発サーバーの起動もビルドも高速（Vite が速い？よくわかってない）
+- **シンプルな構成**: 余計な設定がなく、見通しが良い
+- **型安全なコンテンツ**: Content Collections による frontmatter の型チェック
+- **インフラの統一**: Cloudflare でドメイン・DNS・ホスティングを一元管理
+
+個人ブログという用途には、Astro は最適解の一つだと思う。
