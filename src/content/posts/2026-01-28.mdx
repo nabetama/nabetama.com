@@ -155,23 +155,6 @@ MDX ファイルの frontmatter は若干の調整が必要だったが、本文
 また、移行を機にパンくずリストを追加した。
 記事ページでの現在位置がわかりやすくなった。
 
-```astro
-<!-- src/layouts/PostLayout.astro -->
-<nav class="text-sm mb-6">
-  <ol class="flex items-center gap-2 text-gray-500 dark:text-darktheme-muted">
-    <li>
-      <a href="/" class="hover:text-gray-900 dark:hover:text-white transition-colors">Home</a>
-    </li>
-    <li class="text-gray-400 dark:text-gray-600">&gt;</li>
-    <li>
-      <a href="/posts" class="hover:text-gray-900 dark:hover:text-white transition-colors">Blog</a>
-    </li>
-    <li class="text-gray-400 dark:text-gray-600">&gt;</li>
-    <li class="text-gray-700 dark:text-gray-300 truncate max-w-xs">{title}</li>
-  </ol>
-</nav>
-```
-
 さらに、frontmatter に `tags` フィールドを用意しておきながら全く活用していなかったので、今回トップページの記事カードにタグを表示するようにした。
 
 ```astro
