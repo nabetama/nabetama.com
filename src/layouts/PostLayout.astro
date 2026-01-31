@@ -1,6 +1,6 @@
 ---
-import BaseLayout from './BaseLayout.astro';
-import { format } from 'date-fns';
+import BaseLayout from "./BaseLayout.astro";
+import { format } from "date-fns";
 
 interface Props {
   title: string;
@@ -14,57 +14,88 @@ interface Props {
 const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} ogImage={ogImage} ogType="article">
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  ogType="article"
+>
   <div class="max-w-4xl mx-auto px-6 lg:px-12">
     <!-- パンくずリスト -->
     <nav class="text-sm mb-6">
-      <ol class="flex items-center gap-2 text-gray-500 dark:text-darktheme-muted">
+      <ol
+        class="flex items-center gap-2 text-gray-500 dark:text-darktheme-muted"
+      >
         <li>
-          <a href="/" class="hover:text-gray-900 dark:hover:text-white transition-colors">Home</a>
+          <a
+            href="/"
+            class="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >Home</a
+          >
         </li>
         <li class="text-gray-400 dark:text-gray-600">&gt;</li>
         <li>
-          <a href="/posts" class="hover:text-gray-900 dark:hover:text-white transition-colors">Blog</a>
+          <a
+            href="/posts"
+            class="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >Blog</a
+          >
         </li>
         <li class="text-gray-400 dark:text-gray-600">&gt;</li>
-        <li class="text-gray-700 dark:text-gray-300 truncate max-w-xs">{title}</li>
+        <li class="text-gray-700 dark:text-gray-300 truncate max-w-xs">
+          {title}
+        </li>
       </ol>
     </nav>
 
     <article>
       <!-- ヘッダー -->
       <header class="mb-8">
-        <h1 class="text-3xl lg:text-4xl font-bold mb-4 dark:text-white leading-tight">{title}</h1>
-        {description && (
-          <p class="text-lg text-gray-600 dark:text-darktheme-muted mb-4">{description}</p>
-        )}
-        <div class="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-darktheme-muted">
+        <h1
+          class="text-3xl lg:text-4xl font-bold mb-4 dark:text-white leading-tight"
+        >
+          {title}
+        </h1>
+        {
+          description && (
+            <p class="text-lg text-gray-600 dark:text-darktheme-muted mb-4">
+              {description}
+            </p>
+          )
+        }
+        <div
+          class="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-darktheme-muted"
+        >
           <time datetime={date}>
-            {format(new Date(date), 'yyyy年MM月dd日')}
+            {format(new Date(date), "yyyy年MM月dd日")}
           </time>
-          {lastModDate && (
-            <>
-              <span class="text-gray-300 dark:text-gray-600">|</span>
-              <time datetime={lastModDate}>
-                更新: {format(new Date(lastModDate), 'yyyy年MM月dd日')}
-              </time>
-            </>
-          )}
-          {tags && tags.length > 0 && (
-            <>
-              <span class="text-gray-300 dark:text-gray-600">|</span>
-              <div class="flex gap-2">
-                {tags.map((tag) => (
-                  <a
-                    href={`/tags/${tag}/`}
-                    class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
-                  >
-                    {tag}
-                  </a>
-                ))}
-              </div>
-            </>
-          )}
+          {
+            lastModDate && (
+              <>
+                <span class="text-gray-300 dark:text-gray-600">|</span>
+                <time datetime={lastModDate}>
+                  更新: {format(new Date(lastModDate), "yyyy年MM月dd日")}
+                </time>
+              </>
+            )
+          }
+          {
+            tags && tags.length > 0 && (
+              <>
+                <span class="text-gray-300 dark:text-gray-600">|</span>
+                <div class="flex gap-2">
+                  {tags.map((tag) => (
+                    <a
+                      href={`/tags/${tag}/`}
+                      class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+                    >
+                      {tag}
+                    </a>
+                  ))}
+                </div>
+              </>
+            )
+          }
         </div>
       </header>
 
@@ -72,7 +103,8 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
       <hr class="border-gray-200 dark:border-darktheme-border mb-8" />
 
       <!-- 本文 -->
-      <div class="prose prose-lg dark:prose-invert max-w-none dark:text-[#d4d4d4]
+      <div
+        class="prose prose-lg dark:prose-invert max-w-none dark:text-[#d4d4d4]
         prose-headings:font-bold prose-headings:dark:text-white
         prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
         prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
@@ -83,19 +115,30 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
         prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:dark:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
         [&_iframe]:mx-auto [&_.imgur-embed-iframe-pub]:mx-auto [&_.imgur-embed-iframe-pub]:block
         prose-img:rounded-lg prose-img:shadow-lg
-        prose-li:marker:text-gray-400 prose-li:dark:marker:text-gray-500
-      ">
+        prose-li:marker:text-gray-400 prose-li:dark:marker:text-gray-500"
+      >
         <slot />
       </div>
 
       <!-- フッター -->
-      <footer class="mt-12 pt-8 border-t border-gray-200 dark:border-darktheme-border">
+      <footer
+        class="mt-12 pt-8 border-t border-gray-200 dark:border-darktheme-border"
+      >
         <a
           href="/posts"
           class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-darktheme-muted hover:text-gray-900 dark:hover:text-white transition-colors"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
           </svg>
           すべての記事を見る
         </a>

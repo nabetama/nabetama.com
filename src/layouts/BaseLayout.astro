@@ -1,25 +1,26 @@
 ---
-import Header from '@/components/Header.astro';
-import Footer from '@/components/Footer.astro';
-import '@/styles/global.css';
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import "@/styles/global.css";
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
-  ogType?: 'website' | 'article';
+  ogType?: "website" | "article";
   wide?: boolean;
 }
 
-const SITE_DOMAIN = 'nabetama.com';
-const defaultDescription = '購入したものや気になったものを紹介したり学んだことをメモするブログです。';
+const SITE_DOMAIN = "nabetama.com";
+const defaultDescription =
+  "購入したものや気になったものを紹介したり学んだことをメモするブログです。";
 const defaultOgImage = `https://${SITE_DOMAIN}/default_og_image.jpg`;
 
 const {
   title,
   description = defaultDescription,
   ogImage = defaultOgImage,
-  ogType = 'website',
+  ogType = "website",
   wide = false,
 } = Astro.props;
 
@@ -60,10 +61,12 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <!-- Theme -->
     <script is:inline>
-      const savedTheme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        document.documentElement.classList.add('dark');
+      const savedTheme = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add("dark");
       }
     </script>
   </head>

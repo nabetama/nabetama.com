@@ -1,10 +1,10 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getEntry, render } from 'astro:content';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getEntry, render } from "astro:content";
 
-const page = await getEntry('pages', 'about');
+const page = await getEntry("pages", "about");
 if (!page) {
-  return Astro.redirect('/404');
+  return Astro.redirect("/404");
 }
 
 const { Content } = await render(page);
@@ -14,9 +14,15 @@ const { Content } = await render(page);
   <div class="max-w-4xl mx-auto px-6 lg:px-12">
     <!-- パンくずリスト -->
     <nav class="text-sm mb-6">
-      <ol class="flex items-center gap-2 text-gray-500 dark:text-darktheme-muted">
+      <ol
+        class="flex items-center gap-2 text-gray-500 dark:text-darktheme-muted"
+      >
         <li>
-          <a href="/" class="hover:text-gray-900 dark:hover:text-white transition-colors">Home</a>
+          <a
+            href="/"
+            class="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >Home</a
+          >
         </li>
         <li class="text-gray-400 dark:text-gray-600">&gt;</li>
         <li class="text-gray-700 dark:text-gray-300">{page.data.title}</li>
@@ -26,17 +32,26 @@ const { Content } = await render(page);
     <article>
       <!-- ヘッダー -->
       <header class="mb-8">
-        <h1 class="text-3xl lg:text-4xl font-bold mb-4 dark:text-white leading-tight">{page.data.title}</h1>
-        {page.data.description && (
-          <p class="text-lg text-gray-600 dark:text-darktheme-muted">{page.data.description}</p>
-        )}
+        <h1
+          class="text-3xl lg:text-4xl font-bold mb-4 dark:text-white leading-tight"
+        >
+          {page.data.title}
+        </h1>
+        {
+          page.data.description && (
+            <p class="text-lg text-gray-600 dark:text-darktheme-muted">
+              {page.data.description}
+            </p>
+          )
+        }
       </header>
 
       <!-- 区切り線 -->
       <hr class="border-gray-200 dark:border-darktheme-border mb-8" />
 
       <!-- 本文 -->
-      <div class="prose prose-lg dark:prose-invert max-w-none dark:text-[#d4d4d4]
+      <div
+        class="prose prose-lg dark:prose-invert max-w-none dark:text-[#d4d4d4]
         prose-headings:font-bold prose-headings:dark:text-white
         prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
         prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
@@ -46,8 +61,8 @@ const { Content } = await render(page);
         prose-pre:bg-neutral-900 prose-pre:dark:bg-neutral-950
         prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:dark:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
         prose-img:rounded-lg prose-img:shadow-lg
-        prose-li:marker:text-gray-400 prose-li:dark:marker:text-gray-500
-      ">
+        prose-li:marker:text-gray-400 prose-li:dark:marker:text-gray-500"
+      >
         <Content />
       </div>
     </article>
