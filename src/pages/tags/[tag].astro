@@ -1,18 +1,20 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
-import { compareDesc, format } from 'date-fns';
+import { getCollection } from "astro:content";
+import { compareDesc, format } from "date-fns";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
-  const EXCLUDE_POST_ID = '1999-01-01';
-  const allPosts = await getCollection('posts');
+  const EXCLUDE_POST_ID = "1999-01-01";
+  const allPosts = await getCollection("posts");
   const posts = allPosts.filter((post) => post.id !== EXCLUDE_POST_ID);
 
   // 全タグを収集
   const allTags = new Set<string>();
-  posts.forEach((post) => {
-    post.data.tags?.forEach((tag) => allTags.add(tag));
-  });
+  for (const post of posts) {
+    for (const tag of post.data.tags ?? []) {
+      allTags.add(tag);
+    }
+  }
 
   // 各タグに対してパスを生成
   return Array.from(allTags).map((tag) => ({
@@ -21,7 +23,9 @@ export async function getStaticPaths() {
       tag,
       posts: posts
         .filter((post) => post.data.tags?.includes(tag))
-        .sort((a, b) => compareDesc(new Date(a.data.date), new Date(b.data.date))),
+        .sort((a, b) =>
+          compareDesc(new Date(a.data.date), new Date(b.data.date)),
+        ),
     },
   }));
 }
