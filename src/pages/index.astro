@@ -1,11 +1,11 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
-import { compareDesc, format } from 'date-fns';
+import { getCollection } from "astro:content";
+import { compareDesc, format } from "date-fns";
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
-const EXCLUDE_POST_ID = '1999-01-01';
+const EXCLUDE_POST_ID = "1999-01-01";
 
-const allPosts = await getCollection('posts');
+const allPosts = await getCollection("posts");
 const posts = allPosts
   .filter((post) => post.id !== EXCLUDE_POST_ID)
   .sort((a, b) => compareDesc(new Date(a.data.date), new Date(b.data.date)));
@@ -24,10 +24,11 @@ function estimateReadingTime(content: string): number {
 
 <BaseLayout wide={true}>
   <div class="max-w-5xl mx-auto px-6 lg:px-12">
-    <!-- Blog Posts セクション（最新3件） -->
     <section class="mb-16">
-      <h2 class="text-2xl font-bold text-center mb-8 dark:text-white">Recent Posts</h2>
-      <!-- グリッド背景付きコンテナ -->
+      <h2 class="text-2xl font-bold text-center mb-8 dark:text-white">
+        Recent Posts
+      </h2>
+
       <div class="grid-background rounded-lg p-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {
@@ -37,7 +38,6 @@ function estimateReadingTime(content: string): number {
                 data-href={`/posts/${post.id}/`}
                 onclick="if (event.target.tagName !== 'A') window.location.href = this.dataset.href"
               >
-                <!-- サムネイル -->
                 <div class="h-32 thumbnail-placeholder relative overflow-hidden">
                   {post.data.thumbnail ? (
                     <img
@@ -47,12 +47,13 @@ function estimateReadingTime(content: string): number {
                     />
                   ) : (
                     <div class="absolute inset-0 flex items-center justify-center">
-                      <span class="text-gray-600 dark:text-gray-500 text-4xl font-bold">{post.data.title.charAt(0)}</span>
+                      <span class="text-gray-600 dark:text-gray-500 text-4xl font-bold">
+                        {post.data.title.charAt(0)}
+                      </span>
                     </div>
                   )}
                 </div>
-                <!-- コンテンツ -->
-                <div class="p-4 flex flex-col flex-grow">
+                <div class="p-4 flex flex-col grow">
                   {post.data.tags && post.data.tags.length > 0 && (
                     <a
                       href={`/tags/${post.data.tags[0]}/`}
@@ -70,11 +71,20 @@ function estimateReadingTime(content: string): number {
                     </p>
                   )}
                   <div class="flex items-center justify-end text-xs text-gray-500 dark:text-darktheme-muted mt-auto pt-2">
-                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      class="w-3.5 h-3.5 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <circle cx="12" cy="12" r="10" stroke-width="2" />
-                      <path stroke-linecap="round" stroke-width="2" d="M12 6v6l4 2" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-width="2"
+                        d="M12 6v6l4 2"
+                      />
                     </svg>
-                    <span>{estimateReadingTime(post.body || '')} min read</span>
+                    <span>{estimateReadingTime(post.body || "")} min read</span>
                   </div>
                 </div>
               </article>
@@ -84,20 +94,21 @@ function estimateReadingTime(content: string): number {
       </div>
     </section>
 
-    <!-- All Blogs セクション（4件目以降） -->
-    {remainingPosts.length > 0 && (
-      <section>
-        <h2 class="text-2xl font-bold text-center mb-8 dark:text-white">All Blogs</h2>
-        <div class="divide-y divide-gray-100 dark:divide-darktheme-border">
-          {
-            remainingPosts.map((post) => (
+    {
+      remainingPosts.length > 0 && (
+        <section>
+          <h2 class="text-2xl font-bold text-center mb-8 dark:text-white">
+            All Blogs
+          </h2>
+          <div class="divide-y divide-gray-100 dark:divide-darktheme-border">
+            {remainingPosts.map((post) => (
               <a href={`/posts/${post.id}/`} class="block group">
                 <article class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6 py-4 pl-4 border-l-2 border-transparent hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-all">
                   <time
                     class="text-xs text-gray-500 dark:text-darktheme-muted shrink-0 w-28"
                     datetime={post.data.date}
                   >
-                    {format(new Date(post.data.date), 'yyyy年MM月dd日')}
+                    {format(new Date(post.data.date), "yyyy年MM月dd日")}
                   </time>
                   <div class="flex-1">
                     <span class="text-sm font-medium dark:text-white">
@@ -111,47 +122,62 @@ function estimateReadingTime(content: string): number {
                   </div>
                 </article>
               </a>
-            ))
-          }
-        </div>
-      </section>
-    )}
+            ))}
+          </div>
+        </section>
+      )
+    }
   </div>
 </BaseLayout>
 
 <style>
   .grid-background {
-    background-image:
-      radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px
+    );
     background-size: 24px 24px;
     background-color: #0f0f0f;
   }
 
   :global(.dark) .grid-background {
-    background-image:
-      radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px
+    );
     background-color: #0f0f0f;
   }
 
   @media (prefers-color-scheme: light) {
     .grid-background {
-      background-image:
-        radial-gradient(circle, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+      background-image: radial-gradient(
+        circle,
+        rgba(0, 0, 0, 0.08) 1px,
+        transparent 1px
+      );
       background-color: #fafafa;
     }
   }
 
   .thumbnail-placeholder {
-    background-image:
-      radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px
+    );
     background-size: 16px 16px;
     background-color: #0f0f0f;
   }
 
   @media (prefers-color-scheme: light) {
     .thumbnail-placeholder {
-      background-image:
-        radial-gradient(circle, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+      background-image: radial-gradient(
+        circle,
+        rgba(0, 0, 0, 0.06) 1px,
+        transparent 1px
+      );
       background-color: #f3f4f6;
     }
   }

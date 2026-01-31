@@ -1,8 +1,8 @@
-import { writeFileSync } from 'fs';
-import { format } from 'date-fns';
+import { writeFileSync } from "node:fs";
+import { format } from "date-fns";
 
-console.log('Creating a new post...');
-const date = format(new Date(), 'yyyy-MM-dd');
+console.log("Creating a new post...");
+const date = format(new Date(), "yyyy-MM-dd");
 
 const frontmatter = `---
 title: ""

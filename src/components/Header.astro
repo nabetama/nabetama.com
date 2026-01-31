@@ -1,13 +1,18 @@
 ---
-const SITE_DOMAIN = 'nabetama.com';
+const SITE_DOMAIN = "nabetama.com";
 ---
 
 <header class="mb-8 px-6 lg:px-12">
   <div class="flex items-center justify-between h-16 max-w-5xl mx-auto">
     <h1 class="text-xl font-bold">
-      <a href="/" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{SITE_DOMAIN}</a>
+      <a
+        href="/"
+        class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+        >{SITE_DOMAIN}</a
+      >
     </h1>
-    <nav class="flex items-center gap-6">
+
+    <nav class="hidden md:flex items-center gap-6">
       <a
         href="/"
         class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -27,5 +32,100 @@ const SITE_DOMAIN = 'nabetama.com';
         About
       </a>
     </nav>
+
+    <button
+      id="menu-toggle"
+      class="md:hidden relative w-8 h-8 flex items-center justify-center"
+      aria-label="メニュー"
+      aria-expanded="false"
+    >
+      <span class="hamburger-line top-[8px]"></span>
+      <span class="hamburger-line top-[15px]"></span>
+      <span class="hamburger-line top-[22px]"></span>
+    </button>
   </div>
+
+  <nav
+    id="mobile-menu"
+    class="md:hidden max-w-5xl mx-auto overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out"
+  >
+    <div
+      class="flex flex-col gap-4 py-4 border-t border-gray-200 dark:border-darktheme-border"
+    >
+      <a
+        href="/"
+        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+      >
+        ホーム
+      </a>
+      <a
+        href="/posts"
+        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+      >
+        記事一覧
+      </a>
+      <a
+        href="/about"
+        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+      >
+        About
+      </a>
+    </div>
+  </nav>
 </header>
+
+<style>
+  .hamburger-line {
+    position: absolute;
+    left: 2px;
+    width: 24px;
+    height: 2px;
+    background-color: currentColor;
+    transition: all 0.3s ease;
+  }
+
+  /* Open state: top line rotates to form X */
+  .menu-open #menu-toggle .hamburger-line:nth-child(1) {
+    top: 15px !important;
+    transform: rotate(45deg);
+  }
+
+  /* Open state: middle line fades out */
+  .menu-open #menu-toggle .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+
+  /* Open state: bottom line rotates to form X */
+  .menu-open #menu-toggle .hamburger-line:nth-child(3) {
+    top: 15px !important;
+    transform: rotate(-45deg);
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+  const header = menu?.closest("header");
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = header?.classList.toggle("menu-open");
+    toggle.setAttribute("aria-expanded", String(!!isOpen));
+
+    if (isOpen) {
+      menu!.style.maxHeight = menu!.scrollHeight + "px";
+      menu!.style.opacity = "1";
+    } else {
+      menu!.style.maxHeight = "0";
+      menu!.style.opacity = "0";
+    }
+  });
+
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      header?.classList.remove("menu-open");
+      toggle?.setAttribute("aria-expanded", "false");
+      menu!.style.maxHeight = "0";
+      menu!.style.opacity = "0";
+    });
+  });
+</script>
