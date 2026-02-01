@@ -1,0 +1,153 @@
+---
+title: "microCMS 使ってる"
+date: "2026-01-31"
+description: "小規模サイトにありがたいサービス"
+lastModDate:
+tags: ["astro", "microcms"]
+---
+
+## microCMSとは
+
+https://microcms.io/
+
+ざっくりいうと国産のヘッドレスCMSサービス。2-3年前に少し触っていたが、用事があって改めて触ってみたらやっぱり良さそうだったので記事にしておく。
+国産なので当然ドキュメントは日本語だし、管理画面のUIも日本語なのはありがたい。
+
+## ヘッドレスCMSのユースケース
+
+このウェブサイトの記事コンテンツはmarkdownで書いて、GitHubにpushしている。
+ただ、ほとんどの人はこんなやり方で記事を書くことはないだろう。
+一般的なブログサービス（note, はてなブログ など）を利用したり、WordPressや最近はNotionを使うケースもあるかもしれない。
+またはmediumや、しずかなインターネットのようなリアルタイムプレビュー機能があるサービスを使う人も多いと思う。
+
+一方でウェブサイト兼ブログのようなウェブコンテンツを運用したい人や会社もある。
+ヘッドレスCMSはそのようなケースに対して、非常に気軽に導入できるサービスだと感じた。
+
+- ウェブサイトのデザインは自分で自由に変更したい
+- 利用者はWYSIWYGエディターで記事を書きたい
+- 小規模企業、個人事業主や個人ブログのコンテンツを管理したいが、コストを抑えたい
+- ホスティングやコード管理はGitHubやCloudflare Pagesで行う体制がある
+
+## microCMSを選んだ理由
+
+外国産ヘッドレスCMSの選択肢はそこそこ多い。全く使ったことはなかったが少し調べただけでも
+[Contentful](https://www.contentful.com/)、[Strapi](https://strapi.io/)、[Sanity](https://www.sanity.io/)など選択肢が多い。
+その中でmicroCMSを選んだ理由はいくつかある。
+
+- **日本語のドキュメントとサポート**: 海外サービスだとドキュメントが英語のみということも多い。microCMSは管理画面もドキュメントもすべて日本語で、プログラマーやソフトウェアエンジニアではない人にも使ってもらいやすい
+- **Hobbyプラン（無料）で十分まかなえる**: 後述するが、Hobbyプランの範囲で今回の用途は十分だった
+- **公式SDKが充実**: `microcms-js-sdk` が公式で提供されており、TypeScriptの型定義もついている。APIレスポンスの型定義もついているので、型安全にコードを書ける。
+- **Astro、Next.jsなどとの連携ガイドが豊富**: [フレームワークごとのチュートリアル](https://document.microcms.io/)があるのも嬉しい
+
+## 利用したmicroCMSの機能
+
+今回は以下の機能を利用した。
+
+### 記事コンテンツの管理
+
+microCMSの管理画面でブログ記事を作成・編集できる。
+リッチエディタが用意されていて、見出し、リスト、テーブル、画像の挿入などが直感的にできる。
+WYSIWYGエディタなので、markdownに慣れていない人でも記事を書ける。
+
+APIスキーマの定義も管理画面からGUIで行う。今回のブログでは以下のようなフィールドを定義した。
+
+- `title`: テキストフィールド
+- `content`: リッチエディタ
+- `eyecatch`: 画像
+- `category`: コンテンツ参照（別途カテゴリAPIを作成する）
+
+### 記事の配信（API）
+
+microCMSに登録したコンテンツはREST APIで取得できる。公式SDKを使えば数行で記事一覧や個別記事が取得できる。
+
+```typescript
+import { createClient } from "microcms-js-sdk";
+
+const client = createClient({
+  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+  apiKey: import.meta.env.MICROCMS_API_KEY,
+});
+
+// 記事一覧を取得
+const response = await client.getList<Blog>({
+  endpoint: "blogs",
+  queries: { orders: "-publishedAt", limit: 100 },
+});
+```
+
+`getList` でリスト取得、`getListDetail` で個別記事取得。クエリパラメータでソート順やフィルタも指定できる。
+レスポンスには `totalCount` や `offset` も含まれるのでページネーションも実装しやすい。
+
+### APIプレビュー
+
+microCMSのコンテンツ詳細画面には「APIプレビュー」機能がある。
+作成したAPIのレスポンスを画面上で確認できる。実際のレスポンスを確認したい場合はこの機能を使うと良い。
+開発中は `astro dev` や `astro dev --host` で確認しながら作っていくと思うが、microCMSが作るコンテンツのHTMLをすぐに確認できるのは便利だ。
+
+### GitHub連携（Webhook）
+
+今回の構成の中でサポートされていて嬉しい機能がWebhook連携。
+microCMSでコンテンツを公開・更新すると、GitHub Actionsのワークフローを自動でトリガーできる。
+
+[公式ドキュメント](https://help.microcms.io/ja/knowledge/webhook-github-actions-settings)もメンテナンスされている。
+
+1. microCMSの管理画面でWebhookを設定し、GitHubの `repository_dispatch` イベントを送るようにする
+1. GitHub Actionsのワークフローで `repository_dispatch` をトリガーに追加する
+1. 記事を公開すると、microCMSからGitHubに通知が飛び、github actions を実行し、ビルド、デプロイを行う
+
+```yaml
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [microcms_update]
+```
+
+これにより、記事を書く人はmicroCMSの管理画面で記事を書いて公開ボタンを押すだけでサイトが更新される。
+GitHubやコマンドラインに触る必要がない。
+
+microCMS側のWebhook設定はGUIで完結する。GitHub APIのトークンを発行してmicroCMSに登録し、
+対象のリポジトリとイベントタイプを指定するだけ。
+
+## SSG（静的サイト生成）との組み合わせ
+
+フレームワークはAstroを使い、`output: "static"` で静的なHTMLを生成している。
+ビルド時にmicroCMSのAPIを叩いて全記事を取得し、`getStaticPaths` で各記事のページを事前生成する。
+
+```typescript
+export async function getStaticPaths() {
+  const { contents } = await getBlogs();
+  return contents.map((blog) => ({
+    params: { slug: blog.id },
+  }));
+}
+```
+
+生成されたHTMLはGitHub Pagesにデプロイされる。
+配信時にはAPIリクエストが一切発生しないので、表示速度が速く、APIの転送量も節約できる。
+
+## Hobbyプランで十分だった
+
+microCMSには複数の料金プランがあるが、今回はHobbyプラン（無料）で運用している。
+
+https://microcms.io/pricing
+
+
+今回のサイトではAPIは `blogs` と `categories` の2つ、メンバーも1-2名の想定なので、Hobbyプランの上限にはまったく届かない。API呼び出しが無制限なのもSSGとの相性がよい。ビルドのたびにAPIを叩く構成でも、呼び出し回数を気にする必要がない。
+
+クレジットカードの登録が不要というのも地味にありがたい。それだけでも試しに触ってみるハードルは低くなり、
+気軽に始められる。有料プランへの移行は必要になった時点で検討すればよいので、
+小規模サイトならまずHobbyプランで始めてみるのがよいと思う。
+
+## まとめ
+
+microCMSは小規模なサイトのCMSとして使いやすいサービスだと感じた。
+管理画面が日本語で直感的に操作でき、SDKを使えば型定義を書かなくても良い。
+Webhook連携によってコンテンツ公開からデプロイまで自動化できるのは実用的で、
+技術者でない人にコンテンツ更新を任せる運用に向いている。
+
+SSG構成だとビルドが走らないとサイトに反映されないが、何度か試したところ
+コンテンツを公開、更新した後のビルドまではほぼラグは感じなかった。
+
+超絶リアルタイム性が求められるとかでない限り、基本的にこの構成で良さそう。
