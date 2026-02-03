@@ -11,7 +11,24 @@
 
 html {
   font-size: calc(1rem + 0.5vw);
-  font-family: sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", Meiryo, sans-serif, "Segoe UI Emoji";
+}
+
+code,
+pre code {
+  font-family:
+    SFMono-Regular,
+    Consolas,
+    "Liberation Mono",
+    Menlo,
+    monospace,
+    Apple Color Emoji,
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+  font-size: 0.9em;
 }
 
 a:hover {
