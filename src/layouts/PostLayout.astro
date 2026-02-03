@@ -22,9 +22,9 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
 >
   <div class="max-w-4xl mx-auto px-6 lg:px-12">
     <!-- パンくずリスト -->
-    <nav class="text-sm mb-6">
+    <nav class="text-xs mb-6">
       <ol
-        class="flex items-center gap-2 text-gray-500 dark:text-darktheme-muted"
+        class="flex items-center gap-2 text-gray-400 dark:text-gray-600"
       >
         <li>
           <a
@@ -42,7 +42,7 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
           >
         </li>
         <li class="text-gray-400 dark:text-gray-600">&gt;</li>
-        <li class="text-gray-700 dark:text-gray-300 truncate max-w-xs">
+        <li class="text-gray-500 dark:text-gray-500 truncate max-w-xs">
           {title}
         </li>
       </ol>
@@ -56,13 +56,6 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
         >
           {title}
         </h1>
-        {
-          description && (
-            <p class="text-lg text-gray-600 dark:text-darktheme-muted mb-4">
-              {description}
-            </p>
-          )
-        }
         <div
           class="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-darktheme-muted"
         >
@@ -104,11 +97,11 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
 
       <!-- 本文 -->
       <div
-        class="prose prose-lg dark:prose-invert max-w-none dark:text-[#d4d4d4]
-        prose-headings:font-bold prose-headings:dark:text-white
+        class="prose prose-lg dark:prose-invert max-w-[720px] dark:text-[#d4d4d4]
+        prose-headings:font-bold prose-headings:dark:text-white prose-headings:tracking-[0.05em]
         prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
         prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-        prose-p:leading-relaxed prose-p:mb-6
+        prose-p:leading-[1.8] prose-p:mb-6
         prose-a:text-indigo-600 prose-a:dark:text-indigo-400 prose-a:no-underline hover:prose-a:underline
         prose-code:bg-gray-100 prose-code:dark:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
         prose-pre:bg-neutral-900 prose-pre:dark:bg-neutral-950

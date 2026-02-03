@@ -28,6 +28,11 @@ p {
   overflow-wrap: break-word;
 }
 
+::selection {
+  background-color: rgba(99, 102, 241, 0.3);
+  color: inherit;
+}
+
 /* Blog card hover effects */
 .blog-card {
   box-shadow: none;
