@@ -10,10 +10,16 @@
 }
 
 html {
-  font-size: calc(1rem + 0.5vw);
+  font-size: 100%;
   font-family:
     -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
     "Hiragino Sans", Meiryo, sans-serif, "Segoe UI Emoji";
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
 }
 
 code,
