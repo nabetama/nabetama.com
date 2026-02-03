@@ -10,8 +10,31 @@
 }
 
 html {
-  font-size: calc(1rem + 0.5vw);
-  font-family: sans-serif;
+  font-size: 100%;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", Meiryo, sans-serif, "Segoe UI Emoji";
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+code,
+pre code {
+  font-family:
+    SFMono-Regular,
+    Consolas,
+    "Liberation Mono",
+    Menlo,
+    monospace,
+    Apple Color Emoji,
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+  font-size: 0.9em;
 }
 
 a:hover {
@@ -28,23 +51,35 @@ p {
   overflow-wrap: break-word;
 }
 
+::selection {
+  background-color: rgba(99, 102, 241, 0.3);
+  color: inherit;
+}
+
 /* Blog card hover effects */
 .blog-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 .blog-card:hover {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 @media (prefers-color-scheme: dark) {
   .blog-card {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
   }
 
   .blog-card:hover {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
   }
+}
+
+/* 見出しのスクロール位置調整 */
+article :is(h2, h3) {
+  scroll-margin-top: 6rem;
 }
 
 /* 埋め込みコンテンツの中央寄せ */

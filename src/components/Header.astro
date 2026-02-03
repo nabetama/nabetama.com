@@ -2,8 +2,8 @@
 const SITE_DOMAIN = "nabetama.com";
 ---
 
-<header class="mb-8 px-6 lg:px-12">
-  <div class="flex items-center justify-between h-16 max-w-5xl mx-auto">
+<header class="mb-0">
+  <div class="flex items-center justify-between py-2">
     <h1 class="text-xl font-bold">
       <a
         href="/"
@@ -14,22 +14,16 @@ const SITE_DOMAIN = "nabetama.com";
 
     <nav class="hidden md:flex items-center gap-6">
       <a
-        href="/"
-        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        ホーム
-      </a>
-      <a
         href="/posts"
         class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
       >
-        記事一覧
+        Archive
       </a>
       <a
         href="/about"
         class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
       >
-        About
+        About me
       </a>
     </nav>
 
@@ -47,28 +41,22 @@ const SITE_DOMAIN = "nabetama.com";
 
   <nav
     id="mobile-menu"
-    class="md:hidden max-w-5xl mx-auto overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out"
+    class="md:hidden overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out"
   >
     <div
       class="flex flex-col gap-4 py-4 border-t border-gray-200 dark:border-darktheme-border"
     >
       <a
-        href="/"
-        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        ホーム
-      </a>
-      <a
         href="/posts"
         class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
       >
-        記事一覧
+        Archive
       </a>
       <a
         href="/about"
         class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
       >
-        About
+        About me
       </a>
     </div>
   </nav>
