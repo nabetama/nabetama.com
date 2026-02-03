@@ -54,6 +54,11 @@ p {
   }
 }
 
+/* 見出しのスクロール位置調整 */
+article :is(h2, h3) {
+  scroll-margin-top: 6rem;
+}
+
 /* 埋め込みコンテンツの中央寄せ */
 iframe,
 blockquote.imgur-embed-pub {

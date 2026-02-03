@@ -1,0 +1,114 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  filteredHeadings.length > 0 && (
+    <nav aria-label="目次" class="toc-nav">
+      <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">
+        目次
+      </p>
+      <ul class="space-y-1 border-l-2 border-gray-200 dark:border-neutral-700">
+        {filteredHeadings.map((heading) => (
+          <li>
+            <a
+              href={`#${heading.slug}`}
+              class:list={[
+                "toc-link block py-1 text-[13px] leading-snug transition-colors duration-150 border-l-2 -ml-[2px]",
+                heading.depth === 2 ? "pl-3" : "pl-6",
+                "text-gray-500 dark:text-gray-400 border-transparent",
+                "hover:text-gray-900 dark:hover:text-white",
+              ]}
+              data-slug={heading.slug}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  function initToc() {
+    const tocLinks = document.querySelectorAll<HTMLAnchorElement>(".toc-link");
+    if (tocLinks.length === 0) return;
+
+    let activeSlug: string | null = null;
+
+    function setActive(slug: string | null) {
+      if (slug === activeSlug) return;
+      activeSlug = slug;
+
+      tocLinks.forEach((link) => {
+        const linkSlug = link.dataset.slug;
+        if (linkSlug === slug) {
+          link.classList.remove(
+            "text-gray-500",
+            "dark:text-gray-400",
+            "border-transparent"
+          );
+          link.classList.add(
+            "text-indigo-600",
+            "dark:text-indigo-400",
+            "border-indigo-600",
+            "dark:border-indigo-400",
+            "font-medium"
+          );
+        } else {
+          link.classList.remove(
+            "text-indigo-600",
+            "dark:text-indigo-400",
+            "border-indigo-600",
+            "dark:border-indigo-400",
+            "font-medium"
+          );
+          link.classList.add(
+            "text-gray-500",
+            "dark:text-gray-400",
+            "border-transparent"
+          );
+        }
+      });
+    }
+
+    const headingElements = Array.from(tocLinks)
+      .map((link) => document.getElementById(link.dataset.slug!))
+      .filter(Boolean) as HTMLElement[];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+            break;
+          }
+        }
+      },
+      { rootMargin: "-80px 0px -80% 0px" }
+    );
+
+    headingElements.forEach((el) => observer.observe(el));
+
+    tocLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const slug = link.dataset.slug!;
+        const target = document.getElementById(slug);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth" });
+          history.replaceState(null, "", `#${slug}`);
+        }
+      });
+    });
+  }
+
+  initToc();
+  document.addEventListener("astro:after-swap", initToc);
+</script>

@@ -1,5 +1,6 @@
 ---
 import { format } from "date-fns";
+import TableOfContents from "@/components/TableOfContents.astro";
 import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
@@ -9,9 +10,20 @@ interface Props {
   description?: string;
   ogImage?: string;
   tags?: string[];
+  headings?: { depth: number; slug: string; text: string }[];
 }
 
-const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
+const {
+  title,
+  date,
+  lastModDate,
+  description,
+  ogImage,
+  tags,
+  headings = [],
+} = Astro.props;
+
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
 
 <BaseLayout
@@ -20,8 +32,67 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
   ogImage={ogImage}
   ogType="article"
 >
-  <div class="max-w-4xl mx-auto px-6 lg:px-12">
-    <!-- パンくずリスト -->
+  {
+    tocHeadings.length > 0 && (
+      <div
+        id="mobile-toc-bar"
+        class="xl:hidden sticky top-0 z-40 bg-white/90 dark:bg-darktheme-bg/90 backdrop-blur border-b border-gray-200 dark:border-darktheme-border"
+      >
+        <div class="max-w-4xl mx-auto px-6 lg:px-12 flex items-center justify-end h-8">
+          <button
+            id="mobile-toc-toggle"
+            class="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            aria-label="目次"
+            aria-expanded="false"
+          >
+            目次
+            <svg
+              class="w-3 h-3 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        </div>
+        <div
+          id="mobile-toc-dropdown"
+          class="overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out"
+        >
+          <div class="max-w-4xl mx-auto px-6 lg:px-12 py-4">
+            <div class="space-y-1 border-l-2 border-gray-200 dark:border-neutral-700">
+              <a
+                href="#"
+                class="mobile-toc-top block py-1.5 pl-3 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-l-2 -ml-[2px] border-transparent transition-colors"
+              >
+                ページトップへ
+              </a>
+              {tocHeadings.map((heading) => (
+                <a
+                  href={`#${heading.slug}`}
+                  class:list={[
+                    "mobile-toc-link block py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-l-2 -ml-[2px] border-transparent transition-colors",
+                    heading.depth === 2 ? "pl-3" : "pl-6",
+                  ]}
+                  data-slug={heading.slug}
+                >
+                  {heading.text}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  <div class="max-w-4xl xl:max-w-[1100px] mx-auto px-6 lg:px-12 pt-6">
     <nav class="text-xs mb-6">
       <ol
         class="flex items-center gap-2 text-gray-400 dark:text-gray-600"
@@ -48,94 +119,152 @@ const { title, date, lastModDate, description, ogImage, tags } = Astro.props;
       </ol>
     </nav>
 
-    <article>
-      <!-- ヘッダー -->
-      <header class="mb-8">
-        <h1
-          class="text-3xl lg:text-4xl font-bold mb-4 dark:text-white leading-tight"
-        >
-          {title}
-        </h1>
-        <div
-          class="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-darktheme-muted"
-        >
-          <time datetime={date}>
-            {format(new Date(date), "yyyy年MM月dd日")}
-          </time>
-          {
-            lastModDate && (
-              <>
-                <span class="text-gray-300 dark:text-gray-600">|</span>
-                <time datetime={lastModDate}>
-                  更新: {format(new Date(lastModDate), "yyyy年MM月dd日")}
-                </time>
-              </>
-            )
-          }
-          {
-            tags && tags.length > 0 && (
-              <>
-                <span class="text-gray-300 dark:text-gray-600">|</span>
-                <div class="flex gap-2">
-                  {tags.map((tag) => (
-                    <a
-                      href={`/tags/${tag}/`}
-                      class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
-                    >
-                      {tag}
-                    </a>
-                  ))}
-                </div>
-              </>
-            )
-          }
-        </div>
-      </header>
-
-      <!-- 区切り線 -->
-      <hr class="border-gray-200 dark:border-darktheme-border mb-8" />
-
-      <!-- 本文 -->
-      <div
-        class="prose prose-lg dark:prose-invert max-w-[720px] dark:text-[#d4d4d4]
-        prose-headings:font-bold prose-headings:dark:text-white prose-headings:tracking-[0.05em]
-        prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-        prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-        prose-p:leading-[1.8] prose-p:mb-6
-        prose-a:text-indigo-600 prose-a:dark:text-indigo-400 prose-a:no-underline hover:prose-a:underline
-        prose-code:bg-gray-100 prose-code:dark:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-        prose-pre:bg-neutral-900 prose-pre:dark:bg-neutral-950
-        prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:dark:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
-        [&_iframe]:mx-auto [&_.imgur-embed-iframe-pub]:mx-auto [&_.imgur-embed-iframe-pub]:block
-        prose-img:rounded-lg prose-img:shadow-lg
-        prose-li:marker:text-gray-400 prose-li:dark:marker:text-gray-500"
-      >
-        <slot />
-      </div>
-
-      <!-- フッター -->
-      <footer
-        class="mt-12 pt-8 border-t border-gray-200 dark:border-darktheme-border"
-      >
-        <a
-          href="/posts"
-          class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-darktheme-muted hover:text-gray-900 dark:hover:text-white transition-colors"
-        >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <div class="xl:grid xl:grid-cols-[1fr_240px] xl:gap-10">
+      <article>
+        <header class="mb-8">
+          <h1
+            class="text-3xl lg:text-4xl font-bold mb-4 dark:text-white leading-tight"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
-          </svg>
-          すべての記事を見る
-        </a>
-      </footer>
-    </article>
+            {title}
+          </h1>
+          <div
+            class="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-darktheme-muted"
+          >
+            <time datetime={date}>
+              {format(new Date(date), "yyyy年MM月dd日")}
+            </time>
+            {
+              lastModDate && (
+                <>
+                  <span class="text-gray-300 dark:text-gray-600">|</span>
+                  <time datetime={lastModDate}>
+                    更新: {format(new Date(lastModDate), "yyyy年MM月dd日")}
+                  </time>
+                </>
+              )
+            }
+            {
+              tags && tags.length > 0 && (
+                <>
+                  <span class="text-gray-300 dark:text-gray-600">|</span>
+                  <div class="flex gap-2">
+                    {tags.map((tag) => (
+                      <a
+                        href={`/tags/${tag}/`}
+                        class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+                      >
+                        {tag}
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )
+            }
+          </div>
+        </header>
+
+        <hr class="border-gray-200 dark:border-darktheme-border mb-8" />
+
+        <div
+          class="prose dark:prose-invert max-w-none dark:text-[#d4d4d4]
+          prose-headings:font-bold prose-headings:dark:text-white prose-headings:tracking-[0.05em]
+          prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+          prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+          prose-p:leading-[1.8] prose-p:mb-6
+          prose-a:text-indigo-600 prose-a:dark:text-indigo-400 prose-a:no-underline hover:prose-a:underline
+          prose-code:bg-gray-100 prose-code:dark:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+          prose-pre:bg-neutral-900 prose-pre:dark:bg-neutral-950
+          prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:dark:border-gray-600 prose-blockquote:pl-4 prose-blockquote:italic
+          [&_iframe]:mx-auto [&_.imgur-embed-iframe-pub]:mx-auto [&_.imgur-embed-iframe-pub]:block
+          prose-img:rounded-lg prose-img:shadow-lg
+          prose-li:marker:text-gray-400 prose-li:dark:marker:text-gray-500"
+        >
+          <slot />
+        </div>
+
+        <footer
+          class="mt-12 pt-8 border-t border-gray-200 dark:border-darktheme-border"
+        >
+          <a
+            href="/posts"
+            class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-darktheme-muted hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+            </svg>
+            すべての記事を見る
+          </a>
+        </footer>
+      </article>
+
+      <aside class="hidden xl:block">
+        <div class="sticky top-24">
+          <TableOfContents headings={headings} />
+        </div>
+      </aside>
+    </div>
   </div>
 </BaseLayout>
+
+<script>
+  function initMobileToc() {
+    const toggle = document.getElementById("mobile-toc-toggle");
+    const dropdown = document.getElementById("mobile-toc-dropdown");
+    if (!toggle || !dropdown) return;
+
+    let isOpen = false;
+
+    function close() {
+      isOpen = false;
+      toggle!.setAttribute("aria-expanded", "false");
+      dropdown!.style.maxHeight = "0";
+      dropdown!.style.opacity = "0";
+      toggle!.querySelector("svg")?.classList.remove("rotate-180");
+    }
+
+    toggle.addEventListener("click", () => {
+      isOpen = !isOpen;
+      toggle.setAttribute("aria-expanded", String(isOpen));
+
+      if (isOpen) {
+        dropdown.style.maxHeight = dropdown.scrollHeight + "px";
+        dropdown.style.opacity = "1";
+        toggle.querySelector("svg")?.classList.add("rotate-180");
+      } else {
+        close();
+      }
+    });
+
+    const topLink = dropdown.querySelector(".mobile-toc-top");
+    topLink?.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      close();
+    });
+
+    dropdown.querySelectorAll<HTMLAnchorElement>(".mobile-toc-link").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const slug = link.dataset.slug!;
+        const target = document.getElementById(slug);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth" });
+          history.replaceState(null, "", `#${slug}`);
+        }
+        close();
+      });
+    });
+  }
+
+  initMobileToc();
+  document.addEventListener("astro:after-swap", initMobileToc);
+</script>
