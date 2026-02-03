@@ -33,21 +33,6 @@ function estimateReadingTime(content: string): number {
                 data-href={`/posts/${post.id}/`}
                 onclick="if (event.target.tagName !== 'A') window.location.href = this.dataset.href"
               >
-                <div class="h-32 thumbnail-placeholder relative overflow-hidden">
-                  {post.data.thumbnail ? (
-                    <img
-                      src={post.data.thumbnail}
-                      alt={post.data.title}
-                      class="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div class="absolute inset-0 flex items-center justify-center">
-                      <span class="text-gray-600 dark:text-gray-500 text-4xl font-bold">
-                        {post.data.title.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                </div>
                 <div class="p-4 flex flex-col grow">
                   {post.data.tags && post.data.tags.length > 0 && (
                     <a
@@ -125,27 +110,6 @@ function estimateReadingTime(content: string): number {
 </BaseLayout>
 
 <style>
-  .thumbnail-placeholder {
-    background-image: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.06) 1px,
-      transparent 1px
-    );
-    background-size: 16px 16px;
-    background-color: #0f0f0f;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .thumbnail-placeholder {
-      background-image: radial-gradient(
-        circle,
-        rgba(0, 0, 0, 0.06) 1px,
-        transparent 1px
-      );
-      background-color: #f3f4f6;
-    }
-  }
-
   .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
