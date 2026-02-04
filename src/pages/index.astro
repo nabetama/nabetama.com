@@ -35,24 +35,24 @@ function estimateReadingTime(content: string): number {
                   {post.data.tags && post.data.tags.length > 0 && (
                     <a
                       href={`/tags/${post.data.tags[0]}/`}
-                      class="relative z-10 inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 mb-2 self-start hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
+                      class="relative z-10 inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 mb-2 self-start hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
                     >
                       {post.data.tags[0]}
                     </a>
                   )}
-                  <h3 class="text-sm font-medium mb-1 dark:text-white line-clamp-2 max-w-[18em]">
+                  <h3 class="text-base font-medium mb-1 dark:text-white line-clamp-2 max-w-[18em]">
                     <a href={`/posts/${post.id}/`} class="before:absolute before:inset-0">
                       {post.data.title}
                     </a>
                   </h3>
                   {post.data.description && (
-                    <p class="text-xs text-gray-600 dark:text-darktheme-muted mb-3 line-clamp-2">
+                    <p class="text-sm text-gray-600 dark:text-darktheme-muted mb-3 line-clamp-2">
                       {post.data.description}
                     </p>
                   )}
-                  <div class="flex items-center justify-end text-xs text-gray-500 dark:text-darktheme-muted mt-auto pt-2">
+                  <div class="flex items-center justify-end text-sm text-gray-500 dark:text-darktheme-muted mt-auto pt-2">
                     <svg
-                      class="w-3.5 h-3.5 mr-1"
+                      class="w-4 h-4 mr-1"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -83,19 +83,19 @@ function estimateReadingTime(content: string): number {
             {remainingPosts.map((post) => (
               <article class="relative group flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-6 py-4 pl-6 border-l-2 border-transparent hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-all">
                 <time
-                  class="text-xs text-gray-500 dark:text-darktheme-muted shrink-0 w-28"
+                  class="text-sm text-gray-500 dark:text-darktheme-muted shrink-0 w-32"
                   datetime={post.data.date}
                 >
                   {format(new Date(post.data.date), "yyyy年MM月dd日")}
                 </time>
-                <div class="flex-1">
-                  <h3 class="text-sm font-medium text-gray-800 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white transition-colors">
+                <div class="flex-1 min-h-12">
+                  <h3 class="text-base font-medium text-gray-800 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white transition-colors">
                     <a href={`/posts/${post.id}/`} class="before:absolute before:inset-0">
                       {post.data.title}
                     </a>
                   </h3>
                   {post.data.description && (
-                    <p class="text-xs text-gray-600 dark:text-darktheme-muted mt-0.5 line-clamp-1">
+                    <p class="text-sm text-gray-600 dark:text-darktheme-muted mt-0.5 line-clamp-1">
                       {post.data.description}
                     </p>
                   )}
