@@ -1,0 +1,216 @@
+---
+title: "SwiftUI  modifier 覚え書き"
+date: "2026-02-28"
+description: "modifierは外側からラップしていくイメージ"
+lastModDate:
+tags: ["SwiftUI", "iOS"]
+---
+
+## modifier 何もわからない..
+
+SwiftUIを書いていると modifier の適用順がわからなくなることがあった。
+それは自分の中でメンタルモデルが構築されておらず、
+その場しのぎでチャチャっと調べたり、AI様に書いてもらったり、闇雲に組み合わせてなんとかなったという偶然の産物だったにもかかわらず、見た目上は問題なく表示されているので、自分も
+modifier を使えていると錯覚しているのではと思い、ドキュメントを読んだりデバッグをしながら学んでみた。
+
+たとえば以下の modifier を考える。
+
+```swift
+private extension View {
+    func settingsCard(cornerRadius: CGFloat = 12) -> some View {
+        self
+            .background(Color.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+    }
+}
+```
+
+![SwiftUI image](https://i.imgur.com/zPW9adM.png)
+
+まず modifier のレンダリングは上から下へ適用されるため、書いた順番によって見た目が変わる。
+そこで先ほどのコードを変更して `.shadow()` を `clipShape()` よりも先に適用してみる。
+
+```swift
+.background(Color.cardBackground)
+.shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+```
+
+![shadow first](https://i.imgur.com/XOr7PGU.png)
+
+`shadow()` しているのに影がなくなってしまった。
+これは、`clipShape()` によって影ごとクリップされたと理解できる。
+この結果から考えると SwiftUIの modifier は以下のように後ろから包んでいくような構造がイメージできる。
+
+```
+shadow(
+  clipShape(
+    background(
+      VStack
+    )
+  )
+)
+```
+
+1. VStack で縦に並べる
+1. backgroundで背景をつける
+1. 角丸をつける
+1. 影を外側に出す
+
+要素の内側から外側に向けて順に見た目確定させていくと考えると描画フローを想像しやすい。
+そう考えると modifier はView を「変形」しているのではなく、新しい View
+を生成していると解釈できる。そのため modifier の順番が変わると「どの View に対して」その modifier が適用されるかも変わる。
+
+ここまでは自分のわずかな iOS アプリ実装経験からの理解なので、正直なんの信ぴょう性もない。
+そこで、このメンタルモデルが正しいか、公式ドキュメントとセットでみてみる。
+
+## modifier は何をしているか
+
+まずそれぞれの modifier の公式ドキュメントを読んでみる。英語は nani
+を利用して翻訳している。
+
+`background()` 
+
+> background(_:alignment:) modifier to add it underneath an existing view.
+
+`overlay()` 
+
+> Layers the views that you specify in front of this view.
+
+`clipShape()`
+
+> Use clipShape(_:style:) to clip the view to the provided shape. By applying a clipping shape to a view, you preserve the parts of the view covered by the shape, while eliminating other parts of the view. The clipping shape itself isn’t visible.
+
+参考: 
+- [background](https://developer.apple.com/documentation/swiftui/adding-a-background-to-your-view#Add-a-background)
+- [overlay](https://developer.apple.com/documentation/swiftui/view/overlay(alignment:content:))
+- [clipShape](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:))
+
+上記のドキュメントを読み、また実際の挙動をみると、modifier は元の View
+を直接変更しているのではなく、元の View をラップして、新しい View を作っていることが理解できる。
+
+## Layout
+
+SwiftUI には `Layout` というプロトコルがある。以下の関数が実装されていれば `Layout`
+プロトコルを満たしている。
+
+```swfit
+func sizeThatFits(
+    proposal: ProposedViewSize,
+    subviews: Subviews,
+    cache: inout ()
+) -> CGSize {
+    // Calculate and return the size of the layout container.
+}
+
+
+func placeSubviews(
+    in bounds: CGRect,
+    proposal: ProposedViewSize,
+    subviews: Subviews,
+    cache: inout ()
+) {
+    // Tell each subview where to appear.
+}
+```
+
+ref:
+- [Layout](https://developer.apple.com/documentation/swiftui/layout)
+
+`sizeThatFits` はサイズを決め、`placeSubviews` は位置を決める。
+では、具体的にどのようにしてサイズと位置を決めるのか。
+SwiftUIでは以下の流れで決まる。
+
+- 親Viewが子Viewに対してサイズを提案する
+- 子がその提案に基づいてサイズを決定する
+- 決定されたサイズで親が配置する
+
+> During layout in SwiftUI, views choose their own size, but they do that in response to a size proposal from their parent view. 
+
+ref:
+- [ProposedViewSize](https://developer.apple.com/documentation/swiftui/proposedviewsize)
+
+あれ？さきほど読んでいた modifier の説明の中にはサイズの決定に関しては何も記載がない。つまりこれらはレイアウトの責務ではないことがわかる。
+
+## 順番が重要な理由
+
+```swift
+import SwiftUI
+
+struct DiffDemoView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+
+            // 背景 → frame
+            Text("Hello")
+                .background(Color.red) // Text の後ろ
+                .frame(width: 200, height: 100, alignment: .topLeading)
+                .border(.black)
+
+            // frame → 背景
+            Text("Hello")
+                .frame(width: 200, height: 100, alignment: .topLeading)
+                .background(Color.red) // 200x100 サイズのフレームの後ろ
+                .border(.black)
+        }
+        .padding()
+    }
+}
+
+struct DiffDemoView_Previews: PreviewProvider {
+    static var previews: some View {
+        DiffDemoView()
+    }
+}
+```
+
+前者は "Hello" の後ろに背景がつき、後者は200x100 サイズの後ろに背景がつく。
+
+![example image](https://i.imgur.com/KhHIO3X.png)
+
+つまり modifier は View を変更するのではなく、View
+を合成している。ビルダー的なメソッドチェーンに見えるが、実際は
+
+```
+Foo().modifier1().modifier2()
+```
+
+これは以下のような構造になるはず。
+
+```
+modifier2(
+  modifier1(
+    Foo()
+  )
+)
+```
+
+そう考えると modifier は View を合成していくための関数的なレイヤーであると理解できる。
+
+## メンタルモデル
+
+これまでの内容を踏まえ、今後はあるパターンの modifier
+適用順を頑張って覚えるのではなく、ポイントを抑えて理解していくのが良さそうに思う。
+
+- modifier は新しい View を返す
+- Layout は sizeThatFits / placeSubviews で決まる
+- レンダリングする modifier は View をラップして装飾するレイヤー
+
+上記のように考えると
+
+- なぜ shadow の順番が重要なのか
+- なぜ background の位置で見た目が変わるのか
+- なぜ clipShape で影が消えるのか
+
+これらが構造的に理解できる。
+
+## まとめ
+
+SwiftUI
+のドキュメントにはそのものズバリの回答はなかったが、いくつかの内容をピックアップして読み、また実際にXCode上で小さな実装によって動作を確認しながら学んでいくと、API
+の設計そのものが思想として理解できた気がする。
+なんとなく並べるものではなく、View
+を合成していくための関数的レイヤーとして捉え、今後実装経験を積んでいくことで、modifier
+の適用順で悪戦苦闘することは減らせると思う。
+UI を闇雲に組み立てるのではなくViewの構造を宣言することが宣言的UIの設計思想なのだから。
