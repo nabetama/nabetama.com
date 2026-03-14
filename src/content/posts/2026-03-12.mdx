@@ -1,0 +1,321 @@
+---
+title: "SwiftUI でフォールバックを作る"
+date: "2026-03-12"
+description: "トレイリングクロージャが支えている"
+lastModDate:
+tags: ["SwiftUI", "iOS"]
+---
+
+フォーム入力を伴う操作を行う際、実は無課金ユーザーの利用制限に達していて、
+入力完了後に課金を求めるようなケースがある。
+たとえば「入力はできるが、一定件数を超えた場合に保存は有料」のようなシーンだ。
+ユーザー体験を一切無視すると次のような実装になりかねない。
+
+- エラーを出す
+- 入力画面を閉じる
+- あるいは paywall に飛ばす
+
+これは UX としてかなり悪い。自分だったら一生使わないかもしれない。
+ユーザーはすでに入力のコストを払っている。入力した内容を保持したまま課金導線へ移してあげたい。
+こういったフォールバック処理を適当に実装者都合で作ると
+「課金して入力をやり直して続行しよう」ではなく「もう面倒だからやめよう」になると思う。
+
+今回は、実際に自分が書いた実装を元に、パターンの整理、Swiftの理解のためにアウトプットしておく。
+できるだけ汎用的な SwiftUI のパターンとして書くつもりだが、
+まだまだSwift自体の理解が甘いところがあることはご承知おき願いたい。
+
+## やりたいこと
+
+要件だけをみると非常にシンプルで、次の流れを実現したいだけ。
+
+1. 情報の保存を試みる
+1. 無課金状態による機能制限エラーが発生したら、入力内容を保持したまま paywall（課金画面） を開く
+1. 課金処理が完了したら、1. で入力していた情報の保存処理を再実行する
+
+ここで重要なのは、課金画面に遷移することではなく、ユーザーが入力した状態を失わないことだ。
+
+## サンプル
+
+以下のような class, struct を用意した。
+
+- DraftViewModel: ViewModel. 保存処理を行う
+- FeatureGate: 課金状態を管理するクラス。今回はサブスク状態かどうかだけを判定する。
+- EditorView: 入力画面
+- PaywallView: 課金画面
+
+DraftViewModel
+
+```swift
+import SwiftUI
+
+@Observable
+final class DraftViewModel {
+    enum SaveError: Error {
+        case paywallRequired
+    }
+
+    var title: String = ""
+    var body: String = ""
+
+    func save(isSubscribed: Bool) throws {
+        guard isSubscribed else {
+            throw SaveError.paywallRequired
+        }
+
+        // 実際には永続化する
+        print("saved:", title, body)
+    }
+}
+```
+
+FeatureGate
+
+```swift
+@MainActor
+final class FeatureGate: ObservableObject {
+    @Published var isSubscribed = false
+}
+```
+
+EditorView
+
+```swift
+struct EditorView: View {
+    @EnvironmentObject private var featureGate: FeatureGate
+
+    @State private var viewModel = DraftViewModel()
+    @State private var showingPaywall = false
+    @State private var pendingSaveAfterUpgrade = false
+    @State private var errorMessage: String?
+
+    var body: some View {
+        Form {
+            TextField("title", text: $viewModel.title)
+            TextField("body", text: $viewModel.body)
+
+            Button("Save") {
+                attemptSave()
+            }
+        }
+        .sheet(isPresented: $showingPaywall) {
+            PaywallView {
+                showingPaywall = false
+
+                if pendingSaveAfterUpgrade {
+                    pendingSaveAfterUpgrade = false
+                    attemptSave()
+                }
+            }
+        }
+        .alert("Error", isPresented: Binding(
+            get: { errorMessage != nil },
+            set: { if !$0 { errorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(errorMessage ?? "")
+        }
+    }
+
+    private func attemptSave() {
+        do {
+            try viewModel.save(isSubscribed: featureGate.isSubscribed)
+        } catch DraftViewModel.SaveError.paywallRequired {
+            pendingSaveAfterUpgrade = true
+            showingPaywall = true
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+}
+```
+
+
+PaywallView
+
+```swift
+struct PaywallView: View {
+    @EnvironmentObject private var featureGate: FeatureGate
+    let onSubscribed: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text("Paywall")
+
+            Button("Subscribe") {
+                featureGate.isSubscribed = true
+            }
+        }
+        .onChange(of: featureGate.isSubscribed) { _, isSubscribed in
+            if isSubscribed {
+                onSubscribed()
+            }
+        }
+    }
+}
+```
+
+## 実行順序
+
+保存ボタンを押してからの流れは以下の通り。
+
+1. `EditorView` の `Save` ボタンで `attemptSave()` を呼ぶ
+1. `attemptSave()` の中で `viewModel.save(...)` を実行する
+1. 制限エラーなら `pendingSaveAfterUpgrade = true`
+1. `showingPaywall = true` にして sheet を表示する
+1. 課金完了で `featureGate.isSubscribed = true`
+1. `PaywallView` の `onChange` が反応して `onSubscribed()` を呼ぶ
+1. 親View側で paywall を閉じ、`attemptSave()` を再実行する
+1. 今度は購読済みなので保存が通る
+
+これにより、最初の保存失敗は単なる失敗ではなく、課金導線へのフォールバックになる。
+
+## なぜトレイリングクロージャが必要なのか
+
+今回の重要な要件である「入力した内容を保持しておく」実装を
+簡単に実現できるのはトレイリングクロージャがあるからだと思う。
+
+paywall は「課金が完了した」というイベントは知っているが、そのあとに親画面が何をしたいかは知らない。
+
+親画面がやりたいことは以下だ。
+
+- paywall を閉じる
+- pending フラグを戻す
+- 元の保存処理を再実行する
+
+これは親View固有の文脈であって、paywall 自身の責務ではない。
+そのため `PaywallView` には「購読完了後に実行すべき処理」をクロージャとして注入し、
+`PaywallView` は受け取った関数を事後処理として実行する。
+
+```swift
+.sheet(isPresented: $showingPaywall) {
+    PaywallView {
+        showingPaywall = false
+
+        if pendingSaveAfterUpgrade {
+            pendingSaveAfterUpgrade = false
+            attemptSave()
+        }
+    }
+}
+```
+
+`PaywallView` を課金完了イベントを返すだけの子Viewに保ちたかった。
+ここをクロージャにしないと `PaywallView` が親の保存事情まで知る必要があり、密結合になってしまう。
+
+## なぜクロージャでうまくいくのか
+
+理由は、クロージャが定義時のスコープをキャプチャするからである。
+これは別に Swift 固有の概念ではなく、クロージャとはそういうものという話だ。
+
+上の例で `PaywallView { ... }` に渡しているクロージャは、`EditorView` の body の中で定義されている。
+したがってそのクロージャは、定義時点で見えていた値や参照にアクセスできる。
+
+具体的には次のようなものを握っている。
+
+- `showingPaywall`
+- `pendingSaveAfterUpgrade`
+- `attemptSave()`
+- `viewModel`
+- `featureGate`
+
+そのため `PaywallView` 側では `onSubscribed()` を呼ぶだけで、親Viewの文脈に戻ることができる。
+ここで重要なのは、sheet を表示する前の ViewModel をクロージャ定義時のスコープで握っている点である。
+つまり、paywall を sheet として被せても、親Viewが破棄されていない限り、
+
+- 入力中の `viewModel`
+- その時点の pending 状態
+- 再保存に必要な関数
+
+をクロージャ経由でそのまま使える。この性質を利用して
+「課金後に元の保存処理を再開する」という UX を作っている。
+
+## sheet と親Viewの関係
+
+実際のところ sheet は親Viewの上に別の画面を重ねているだけ。
+単に `showingPaywall = true` で sheet を出すだけなら、親Viewの `@State` はそのまま残る。
+
+今回のパターンはこの前提に立っている。
+
+- 親Viewの `@State` は残る
+- つまり `viewModel` は残る
+- その `viewModel` を参照するクロージャも残る
+
+これにより購入完了後に再度入力や保存をやり直すのではなく、保存処理が継続する体験を作れたと思う。
+
+## 実装上の注意
+
+個人的に、この実装パターンを便利に思っているが、いくつか気を付けるポイントもあると思う。
+
+### 1. 二重保存を防ぐ
+
+`onSubscribed()` で無条件に再保存すると、すでに保存済みなのにもう一度保存してしまう。
+そのため `pendingSaveAfterUpgrade` のようなフラグを使っている。
+
+### 2. paywall はイベントを返すだけにする
+
+paywall 側には保存ロジックを持たせない。
+子Viewは購読されたイベントだけを返し、再試行の判断は親Viewに置く。
+今回の実装で言うと、購読イベントが `featureGate.isSubscribed` になる。
+この変数が変更されると `@Publish` により通知される。
+`@EnvironmentObject` として `featureGate` を受けているので、 `onSubscribed()` が実行される。
+
+## まとめ
+
+入力を伴う機能に課金なりなんなりで制限をかけるとき、
+単に保存失敗で終わらせるとUX的には最悪になる。その時点で離脱すると考えた方が良いと思う。
+それを回避するには
+
+- 保存を試みる
+- 制限エラーだけ paywall にフォールバックする
+- 購読完了イベントをトレイリングクロージャで親へ返す
+- 親Viewが元の保存処理を再開する
+
+という設計の方が自然だった。
+
+この設計を成立させている技術的な中心が、トレイリングクロージャだと思う。
+クロージャが定義時のスコープをキャプチャすることで、
+sheet 表示前の ViewModel や状態を保持したまま、子Viewから親Viewの文脈へ安全に戻れる。
+
+今回のケースで見れば paywall は課金を完了する場所であり、保存を知る場所ではない。
+保存を知っている親Viewに処理の再開を閉じ込めるのは自然な設計だと思う。
+
+## 余談
+
+今回のようなケースに限らず、SwiftUIではトレイリングクロージャを使いまくっている。
+
+例えば
+
+```swift
+SettingsView()
+    .tabItem {
+        Label("Settings", systemImage: "gearshape")
+    }
+```
+
+は、実質こう書いているのと同じ。
+
+```swift
+SettingsView()
+    .tabItem({
+        Label("Settings", systemImage: "gearshape")
+    })
+```
+
+ちなみに `tabItem` のシグネチャは以下。
+
+```swift
+nonisolated public func tabItem<V>(@ViewBuilder _ label: () -> V) -> some View where V : View
+```
+
+引数は1つで、その引数が末尾なのでクロージャになる。
+
+```swift
+label: () -> V
+```
+
+だから最後のクロージャ引数として、外に出して書く。
+なお、トレイリングクロージャについては2年くらい前に勉強していたようだが8割忘れていた。
+もっと勉強しないと...。
+
+ref: [Swift のトレイリングクロージャについて](https://nabetama.com/posts/2023-10-24/)
