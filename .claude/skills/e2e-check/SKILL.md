@@ -10,17 +10,18 @@ description: nabetama.com をローカルでビルドし、ビルドしたサイ
 
 ## 構成
 
-| パス | 役割 |
-| --- | --- |
-| `e2e/run.mjs` | `pnpm e2e` の本体。ビルド・サーバー起動・UI 収集・テスト実行・レポート出力を順に行う |
-| `e2e/tests/*.spec.ts` | 手書きのシナリオテスト。`test.describe` の名前がレポートの「シナリオ」、`test` の名前が「テストケース」になる |
-| `e2e/tests/fixtures.ts` | `test` / `step` / `snap` / `sources` などのテスト用ヘルパー |
-| `e2e/tests/generated/*.spec.ts` | UI インベントリから毎回自動生成されるテスト。**手で編集しない** |
-| `e2e/tests/inventory-tests.ts` | 自動生成テストの手順 (要素の表示・リンク先・aria-expanded の切り替え) |
-| `e2e/ui-baseline.json` | UI インベントリのベースライン。コミットして共有する |
-| `e2e/lib/inventory.mjs` | 全ページを PC 幅・スマホ幅で巡回して UI 要素を収集し、ベースラインと比較する |
-| `e2e/lib/diagnose.mjs` | エラーメッセージと変更ファイルから「想定原因」「修正提案」を作るルール |
-| `e2e-report/` | 出力先 (git 管理外)。`index.html` がレポート、`summary.md` が Markdown のサマリ |
+| パス                            | 役割                                                                                                                                          |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `e2e/run.mjs`                   | `pnpm e2e` の本体。ビルド・サーバー起動・UI 収集・テスト実行・レポート出力を順に行う                                                          |
+| `e2e/tests/*.spec.ts`           | 手書きのシナリオテスト。`test.describe` の名前がレポートの「シナリオ」、`test` の名前が「テストケース」になる                                 |
+| `e2e/tests/fixtures.ts`         | `test` / `step` / `snap` / `sources` などのテスト用ヘルパー                                                                                   |
+| `e2e/tests/generated/*.spec.ts` | UI インベントリから毎回自動生成されるテスト。**手で編集しない**                                                                               |
+| `e2e/tests/inventory-tests.ts`  | 自動生成テストの手順 (要素の表示・リンク先・aria-expanded の切り替え)                                                                         |
+| `e2e/ui-baseline.json`          | UI インベントリのベースライン。コミットして共有する                                                                                           |
+| `e2e/lib/inventory.mjs`         | 全ページを PC 幅・スマホ幅で巡回して UI 要素を収集し、ベースラインと比較する                                                                  |
+| `e2e/lib/check-coverage.mjs`    | 実装の変更に対して関連テスト (`sources()` で参照しているもの) が更新されているかの判定。`pnpm e2e:check`・Stop hook・pre-push hook・CI で使う |
+| `e2e/lib/diagnose.mjs`          | エラーメッセージと変更ファイルから「想定原因」「修正提案」を作るルール                                                                        |
+| `e2e-report/`                   | 出力先 (git 管理外)。`index.html` がレポート、`summary.md` が Markdown のサマリ                                                               |
 
 ## 手順
 
@@ -58,8 +59,12 @@ summary.md の想定原因はエラーメッセージに対するルールベー
 ```json
 {
   "e2e/tests/post.spec.ts › 目次バーのボタンで目次が開き、項目をタップすると見出しへ移動して閉じる": {
-    "cause": ["src/layouts/PostLayout.astro の close() が scrollIntoView の直後にドロップダウン (高さ約 370px) を閉じるため、スクロール中にページが詰まり見出しが画面上端より上に行き過ぎる"],
-    "fix": ["close() を先に呼び、ドロップダウンが閉じてから (transitionend 後に) scrollIntoView する"]
+    "cause": [
+      "src/layouts/PostLayout.astro の close() が scrollIntoView の直後にドロップダウン (高さ約 370px) を閉じるため、スクロール中にページが詰まり見出しが画面上端より上に行き過ぎる"
+    ],
+    "fix": [
+      "close() を先に呼び、ドロップダウンが閉じてから (transitionend 後に) scrollIntoView する"
+    ]
   }
 }
 ```
@@ -72,7 +77,7 @@ summary.md の想定原因はエラーメッセージに対するルールベー
 **要素が追加された場合、表示確認・リンク先・開閉の自動テストは `e2e/tests/generated/` に生成済み**。ここでは自動テストで確かめられない操作と仕様のテストを手で追加する。
 
 1. 差分を見る: 要素追加・要素削除・表示変化 (PC 幅/スマホ幅で見える/見えないが変わった)・head 要素の増減・ページ追加/削除。
-2. インベントリに出ない仕様変更も拾う: `git diff main -- src/ astro.config.mjs` を読み、文言・件数 (`slice` の範囲)・並び順・フィルタ条件・スクリプトの挙動の変更を探す。
+2. インベントリに出ない仕様変更も拾う: `pnpm e2e:check` で「関連する E2E テストが更新されていない実装ファイル」を出し、それぞれの `git diff main -- <ファイル>` を読んで、文言・件数 (`slice` の範囲)・並び順・フィルタ条件・スクリプトの挙動の変更を探す。テスト更新が不要と判断した変更は、コミットに `E2E-Not-Needed: <理由>` trailer を付ける (付けないと pre-push hook と CI で止まる)。
 3. 変更ごとに次を判断してテストを追加・修正する。
    - 新しいボタン・開閉 UI → 操作した結果 (開く・閉じる・遷移・表示内容) を確かめるシナリオテスト
    - 新しいページ → そのページ固有の内容 (見出し・一覧の件数や順序・パンくず) のシナリオテスト
@@ -94,12 +99,15 @@ test.describe("シナリオ名 (例: ハンバーガーメニュー (スマホ))
     "テストケース名 (何をすると何が起きるかを 1 文で)",
     sources("src/components/Header.astro"), // 失敗時に変更ファイルと突き合わせる関連ソース
     async ({ page }) => {
-      await step(page, "/ を開く", () => page.goto("/"));          // 操作 + 終了時のスクリーンショット
+      await step(page, "/ を開く", () => page.goto("/")); // 操作 + 終了時のスクリーンショット
       await step(page, "ハンバーガーボタンをタップする", () =>
         page.locator("#menu-toggle").click(),
       );
-      await expect(page.locator("#menu-toggle")).toHaveAttribute("aria-expanded", "true");
-      await snap(page, "メニューを開いた状態");                       // 任意の時点のスクリーンショット
+      await expect(page.locator("#menu-toggle")).toHaveAttribute(
+        "aria-expanded",
+        "true",
+      );
+      await snap(page, "メニューを開いた状態"); // 任意の時点のスクリーンショット
     },
   );
 });

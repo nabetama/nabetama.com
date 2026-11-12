@@ -1,0 +1,17 @@
+#!/bin/sh
+# 実装 (src/ のうち記事を除く) の変更に対して E2E テストの更新漏れがないか確認する。
+# 判定は e2e/lib/check-coverage.mjs。テスト更新が不要な変更はコミットに `E2E-Not-Needed: <理由>` を書く。
+# pnpm install 時に package.json の prepare で core.hooksPath=.githooks が設定される。
+zero=0000000000000000000000000000000000000000
+status=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue # ブランチ削除
+  if ! node e2e/lib/check-coverage.mjs --commits-only --base origin/main --head "$local_sha" --strict; then
+    status=1
+  fi
+done
+if [ "$status" -ne 0 ]; then
+  echo "" >&2
+  echo "push を中止しました: E2E テストを更新するか、不要ならコミットに E2E-Not-Needed: <理由> を書いてください。" >&2
+fi
+exit "$status"
