@@ -251,16 +251,36 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
       close();
     });
 
+    // ドロップダウンは文書の流れの中にあり、閉じるとページの高さが縮む。
+    // 開いたままスクロール先を計算すると閉じた分だけ行き過ぎるため、閉じ終わってからスクロールする。
+    function afterClosed(callback: () => void) {
+      let done = false;
+      const run = () => {
+        if (done) return;
+        done = true;
+        dropdown!.removeEventListener("transitionend", onEnd);
+        callback();
+      };
+      const onEnd = (e: TransitionEvent) => {
+        if (e.target === dropdown && e.propertyName === "max-height") run();
+      };
+      dropdown!.addEventListener("transitionend", onEnd);
+      // transitionend が来ない場合 (アニメーション無効設定など) の保険。duration-300 より少し長く待つ
+      setTimeout(run, 350);
+    }
+
     dropdown.querySelectorAll<HTMLAnchorElement>(".mobile-toc-link").forEach((link) => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
         const slug = link.dataset.slug!;
         const target = document.getElementById(slug);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth" });
-          history.replaceState(null, "", `#${slug}`);
-        }
         close();
+        if (target) {
+          afterClosed(() => {
+            target.scrollIntoView({ behavior: "smooth" });
+            history.replaceState(null, "", `#${slug}`);
+          });
+        }
       });
     });
   }
