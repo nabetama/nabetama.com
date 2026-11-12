@@ -16,7 +16,17 @@
     }
   },
   "files": {
-    "includes": ["**", "!!dist", "!!.astro", "!!.cursor"]
+    "includes": [
+      "**",
+      "!!dist",
+      "!!.astro",
+      "!!.cursor",
+      // pnpm e2e のたびに上書きされる自動生成テストと出力
+      "!!e2e/tests/generated",
+      "!!e2e-report",
+      // Markdown の整形は skill の frontmatter を壊すため対象外にする
+      "!!**/*.md"
+    ]
   },
   "overrides": [
     {

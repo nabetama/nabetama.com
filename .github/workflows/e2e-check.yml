@@ -1,0 +1,22 @@
+name: E2E coverage check
+
+# 実装の変更に対して E2E テストが更新されているかを PR ごとに確認する。
+# 判定は e2e/lib/check-coverage.mjs (Node.js 標準モジュールと git だけで動くため依存のインストールは不要)。
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - name: E2E テストの更新漏れを確認する
+        run: >
+          node e2e/lib/check-coverage.mjs --commits-only --strict
+          --base origin/${{ github.base_ref }}
+          --head ${{ github.event.pull_request.head.sha }}
