@@ -15,7 +15,9 @@
     "write": "node scripts/write-post.js",
     "format": "biome format --write .",
     "lint": "biome lint .",
-    "check": "biome check --write ."
+    "check": "biome check --write .",
+    "e2e": "node e2e/run.mjs",
+    "e2e:report": "node e2e/lib/render-report.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.4",
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@biomejs/biome": "2.6.6",
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.5",
     "tailwindcss": "^4.3.5",
