@@ -36,6 +36,8 @@ defineInventoryTests({
     "meta[property=\"og:description\"]",
     "meta[property=\"og:image\"]",
     "meta[property=\"og:image:alt\"]",
+    "meta[property=\"og:image:height\"]",
+    "meta[property=\"og:image:width\"]",
     "meta[property=\"og:locale\"]",
     "meta[property=\"og:site_name\"]",
     "meta[property=\"og:title\"]",
@@ -51,7 +53,7 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
+      "desktop": "/posts/2016-05-12/",
       "mobile": null,
       "isNew": false
     },
@@ -63,7 +65,7 @@ defineInventoryTests({
       "linkKind": "anchor",
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
+      "desktop": "/posts/2016-05-12/",
       "mobile": null,
       "isNew": false
     },
@@ -75,7 +77,7 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
+      "desktop": "/posts/2016-05-12/",
       "mobile": null,
       "isNew": false
     },
@@ -87,8 +89,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -99,8 +101,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -111,8 +113,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -123,8 +125,8 @@ defineInventoryTests({
       "linkKind": "anchor",
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -135,8 +137,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -147,8 +149,8 @@ defineInventoryTests({
       "linkKind": "external",
       "href": "https://github.com/nabetama",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -159,8 +161,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/feed.xml",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -171,8 +173,8 @@ defineInventoryTests({
       "linkKind": "external",
       "href": "https://x.com/nabetama",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -183,8 +185,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -195,8 +197,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/about/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -207,8 +209,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/posts/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -219,8 +221,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/tags/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -243,7 +245,7 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
+      "desktop": "/posts/2017-01-23/",
       "mobile": null,
       "isNew": false
     },
@@ -255,8 +257,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -267,7 +269,7 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/about/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
+      "desktop": "/posts/2017-01-23/",
       "mobile": null,
       "isNew": false
     },
@@ -279,7 +281,7 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/posts/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
+      "desktop": "/posts/2017-01-23/",
       "mobile": null,
       "isNew": false
     },
@@ -291,7 +293,7 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/tags/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
+      "desktop": "/posts/2017-01-23/",
       "mobile": null,
       "isNew": false
     },
@@ -304,7 +306,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": true,
       "desktop": null,
-      "mobile": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -315,8 +317,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -339,8 +341,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -351,8 +353,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -363,8 +365,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -375,8 +377,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -387,8 +389,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -399,8 +401,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -423,8 +425,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -435,8 +437,8 @@ defineInventoryTests({
       "linkKind": "dynamic",
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -447,8 +449,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/posts/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -459,8 +461,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/posts/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -471,8 +473,8 @@ defineInventoryTests({
       "linkKind": "dynamic",
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -505,10 +507,10 @@ defineInventoryTests({
       "selector": "main a[href^=\"https://b.hatena.ne.jp/entry/s/nabetama.com\"]",
       "text": "B!はてなブックマーク",
       "linkKind": "share",
-      "href": "https://b.hatena.ne.jp/entry/s/nabetama.com/posts/2017-01-17/",
+      "href": "https://b.hatena.ne.jp/entry/s/nabetama.com/posts/2017-01-23/",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -517,10 +519,10 @@ defineInventoryTests({
       "selector": "main a[href^=\"https://x.com/intent/post\"]",
       "text": "ポスト",
       "linkKind": "share",
-      "href": "https://x.com/intent/post?text=ErgoDox+EZ+3%E9%80%B1%E7%9B%AE%E3%81%8F%E3%82%89%E3%81%84%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2&url=https%3A%2F%2Fnabetama.com%2Fposts%2F2017-01-17%2F",
+      "href": "https://x.com/intent/post?text=%E6%98%A8%E6%97%A5%E3%81%AE%E3%83%A9%E3%83%B3%E3%83%8B%E3%83%B3%E3%82%B0&url=https%3A%2F%2Fnabetama.com%2Fposts%2F2017-01-23%2F",
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -531,8 +533,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -544,7 +546,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": true,
       "desktop": null,
-      "mobile": "/posts/2017-01-16-2/",
+      "mobile": "/posts/2017-01-17/",
       "isNew": false
     },
     {
@@ -556,7 +558,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": null,
-      "mobile": "/posts/2017-01-16-2/",
+      "mobile": "/posts/2017-01-17/",
       "isNew": false
     },
     {
@@ -579,8 +581,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-17/",
-      "mobile": "/posts/2017-01-23/",
+      "desktop": "/posts/2017-01-23/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     }
   ]

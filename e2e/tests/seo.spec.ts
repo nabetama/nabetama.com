@@ -166,7 +166,7 @@ test.describe("SEO・構造化データ", () => {
       );
       await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
         "content",
-        /^summary(_large_image)?$/,
+        "summary_large_image",
       );
     },
   );
@@ -278,6 +278,64 @@ test.describe("フィードの本文・アイコン", () => {
         await request.get("/manifest.webmanifest")
       ).json();
       expect(manifest.name).toBe("nabetama.com");
+    },
+  );
+});
+
+test.describe("記事ごとの OGP 画像", () => {
+  test(
+    "画像のない記事の og:image はタイトル入りの生成画像 (1200×630 の PNG) を指し、大きい画像のカードになる",
+    sources(
+      "src/pages/og/posts/[slug].png.ts",
+      "src/lib/og-image.ts",
+      "src/lib/posts.ts",
+      "src/layouts/PostLayout.astro",
+    ),
+    async ({ page, request }) => {
+      await page.goto("/posts/");
+      let path = "";
+      let image = "";
+      for (const { href } of await listPostLinks(page)) {
+        const html = await (await request.get(href)).text();
+        const m = html.match(/<meta property="og:image" content="([^"]+)"/);
+        if (m && m[1].includes("/og/posts/")) {
+          path = href;
+          image = m[1];
+          break;
+        }
+      }
+      expect(path, "生成画像を使う記事がない").not.toBe("");
+      const id = path.replace(/^\/posts\/|\/$/g, "");
+      expect(image).toBe(`${SITE}/og/posts/${id}.png`);
+      await step(page, `${path} を開く`, () => page.goto(path));
+      await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+        "content",
+        "summary_large_image",
+      );
+      await expect(
+        page.locator('meta[property="og:image:width"]'),
+      ).toHaveAttribute("content", "1200");
+      const res = await request.get(`/og/posts/${id}.png`);
+      expect(res.status()).toBe(200);
+      expect(res.headers()["content-type"]).toMatch(/image\/png/);
+      const png = await res.body();
+      // PNG の IHDR から幅と高さを読む
+      expect(png.readUInt32BE(16)).toBe(1200);
+      expect(png.readUInt32BE(20)).toBe(630);
+      await step(page, "生成画像を開く", () =>
+        page.goto(`/og/posts/${id}.png`),
+      );
+    },
+  );
+
+  test(
+    "記事内に画像がある記事の og:image は、その画像を指す",
+    sources("src/lib/posts.ts", "src/lib/text.ts"),
+    async ({ request }) => {
+      const html = await (await request.get("/posts/2026-01-28/")).text();
+      const m = html.match(/<meta property="og:image" content="([^"]+)"/);
+      expect(m?.[1]).not.toContain("/og/posts/");
+      expect(m?.[1]).toMatch(/^https:\/\//);
     },
   );
 });

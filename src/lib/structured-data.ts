@@ -47,7 +47,7 @@ export function blogPosting(post: Post): JsonLd {
     description: post.description,
     datePublished: post.date.toISOString(),
     dateModified: (post.lastModDate ?? post.date).toISOString(),
-    image: post.ogImage,
+    image: post.ogImage.url,
     keywords: post.tags.join(", ") || undefined,
     inLanguage: SITE.lang,
     author: { "@id": PERSON_ID },

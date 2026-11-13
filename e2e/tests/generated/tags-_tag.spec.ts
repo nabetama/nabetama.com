@@ -50,8 +50,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -62,8 +62,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -74,8 +74,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -86,8 +86,8 @@ defineInventoryTests({
       "linkKind": "anchor",
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -98,8 +98,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -110,8 +110,8 @@ defineInventoryTests({
       "linkKind": "external",
       "href": "https://github.com/nabetama",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -122,8 +122,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/feed.xml",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -134,8 +134,8 @@ defineInventoryTests({
       "linkKind": "external",
       "href": "https://x.com/nabetama",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -146,8 +146,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -158,8 +158,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/about/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -170,8 +170,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/posts/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -182,8 +182,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/tags/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -206,7 +206,7 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
+      "desktop": "/tags/Tauri/",
       "mobile": null,
       "isNew": false
     },
@@ -218,8 +218,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -230,7 +230,7 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/about/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
+      "desktop": "/tags/Tauri/",
       "mobile": null,
       "isNew": false
     },
@@ -242,7 +242,7 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/posts/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
+      "desktop": "/tags/Tauri/",
       "mobile": null,
       "isNew": false
     },
@@ -254,7 +254,7 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/tags/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
+      "desktop": "/tags/Tauri/",
       "mobile": null,
       "isNew": false
     },
@@ -267,7 +267,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": true,
       "desktop": null,
-      "mobile": "/tags/Swift/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -278,8 +278,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -302,8 +302,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -314,8 +314,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -326,8 +326,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -338,8 +338,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -350,8 +350,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -362,8 +362,8 @@ defineInventoryTests({
       "linkKind": "dynamic",
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -374,8 +374,8 @@ defineInventoryTests({
       "linkKind": "internal",
       "href": "/tags/",
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     },
     {
@@ -386,8 +386,8 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/tags/Rust/",
-      "mobile": "/tags/Swift/",
+      "desktop": "/tags/Tauri/",
+      "mobile": "/tags/Rust/",
       "isNew": false
     }
   ]

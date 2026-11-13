@@ -18,12 +18,18 @@ export type Post = {
   lastModDate?: Date;
   tags: string[];
   readingMinutes: number;
-  /** OGP に使う画像の絶対 URL。thumbnail → 本文の最初の画像 → サイト既定画像の順で決める。 */
-  ogImage: string;
-  /** ogImage が記事固有の画像か (false ならサイト既定画像)。Twitter カードの大きさの判定に使う。 */
-  hasOwnImage: boolean;
+  /**
+   * OGP に使う画像。thumbnail → 本文の最初の画像 → タイトル入りの生成画像 (/og/posts/<id>.png) の順で決める。
+   * generated が true なら生成画像で、大きさは OG_IMAGE_SIZE。
+   */
+  ogImage: { url: string; generated: boolean };
   entry: PostEntry;
 };
+
+/** 記事ごとに生成する OGP 画像のパス (src/pages/og/posts/[slug].png.ts)。 */
+export function ogImagePath(id: string): string {
+  return `/og/posts/${id}.png`;
+}
 
 export function postHref(id: string): string {
   return `/posts/${id}/`;
@@ -45,8 +51,9 @@ function toPost(entry: PostEntry): Post {
     lastModDate: entry.data.lastModDate ?? undefined,
     tags: entry.data.tags,
     readingMinutes: readingMinutes(body),
-    ogImage: absoluteUrl(image ?? SITE.defaultOgImage.path),
-    hasOwnImage: image !== undefined,
+    ogImage: image
+      ? { url: absoluteUrl(image), generated: false }
+      : { url: absoluteUrl(ogImagePath(entry.id)), generated: true },
     entry,
   };
 }

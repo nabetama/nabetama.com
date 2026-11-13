@@ -50,6 +50,9 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
  */
 export const MIN_POSTS_FOR_INDEXED_TAG = 2;
 
+/** 記事ごとに生成する OGP 画像の大きさ (Twitter の大きい画像カード・Facebook の推奨比 1.91:1)。 */
+export const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const;
+
 /** トップページで一覧に出す記事数。先頭 FEATURED 件はカード、残りはリストで表示する。 */
 export const HOME = {
   featured: 3,
