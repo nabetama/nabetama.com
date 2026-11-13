@@ -196,3 +196,121 @@ test.describe("キーボード操作", () => {
     },
   );
 });
+
+/**
+ * 見えている文字のうち、WCAG AA のコントラスト比 (通常 4.5:1、大きい文字 3:1) を満たさないものを返す。
+ * 背景色は祖先をたどって最初の不透明な背景色を使う (背景画像・グラデーションは考慮しない)。
+ */
+async function lowContrastTexts(page: import("@playwright/test").Page) {
+  return page.evaluate(() => {
+    const parse = (c: string) => {
+      const m = c.match(/rgba?\(([^)]+)\)/);
+      if (!m) return null;
+      const [r, g, b, a = 1] = m[1]
+        .split(/[ ,/]+/)
+        .filter(Boolean)
+        .map(Number);
+      return { r, g, b, a };
+    };
+    const lum = ({ r, g, b }: { r: number; g: number; b: number }) => {
+      const f = (v: number) => {
+        const s = v / 255;
+        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      };
+      return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+    };
+    const bgOf = (el: Element | null) => {
+      for (let e = el; e; e = e.parentElement) {
+        const c = parse(getComputedStyle(e).backgroundColor);
+        if (c && c.a >= 1) return c;
+      }
+      return { r: 255, g: 255, b: 255, a: 1 };
+    };
+    const opaque = (el: Element | null) => {
+      for (let e = el; e; e = e.parentElement) {
+        if (Number(getComputedStyle(e).opacity) < 1) return false;
+      }
+      return true;
+    };
+    const failures: string[] = [];
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+    );
+    const seen = new Set<Element>();
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const el = n.parentElement;
+      if (!el || seen.has(el) || !n.textContent?.trim()) continue;
+      seen.add(el);
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      if (
+        rect.width === 0 ||
+        rect.height === 0 ||
+        style.visibility === "hidden"
+      )
+        continue;
+      if (
+        el.closest(".sr-only, [aria-hidden='true'], script, style") ||
+        !opaque(el)
+      )
+        continue;
+      const fg = parse(style.color);
+      if (!fg) continue;
+      const bg = bgOf(el);
+      const [l1, l2] = [lum(fg), lum(bg)].sort((a, b) => b - a);
+      const ratio = (l1 + 0.05) / (l2 + 0.05);
+      const size = Number.parseFloat(style.fontSize);
+      const large =
+        size >= 24 || (size >= 18.66 && Number(style.fontWeight) >= 700);
+      if (ratio < (large ? 3 : 4.5)) {
+        failures.push(
+          `${ratio.toFixed(2)} "${n.textContent.trim().slice(0, 20)}" <${el.tagName.toLowerCase()} class="${el.className}">`,
+        );
+      }
+    }
+    return failures;
+  });
+}
+
+test.describe("文字のコントラスト", () => {
+  for (const scheme of ["light", "dark"] as const) {
+    test(
+      `${scheme === "light" ? "ライト" : "ダーク"}モードで、主要ページの文字が WCAG AA のコントラスト比を満たす`,
+      sources(
+        "src/styles/global.css",
+        "src/components/TagLink.astro",
+        "src/components/Footer.astro",
+        "src/components/mdx/Heading.astro",
+        "src/pages/posts/index.astro",
+        "src/pages/404.astro",
+        "astro.config.mjs",
+      ),
+      async ({ page }) => {
+        await page.emulateMedia({ colorScheme: scheme });
+        const paths = [
+          ...(await mainPaths(page)),
+          "/tags/",
+          "/this-page-does-not-exist/",
+        ];
+        const failures: string[] = [];
+        for (const path of paths) {
+          await step(page, `${path} を開く`, () => page.goto(path));
+          for (const f of await lowContrastTexts(page))
+            failures.push(`${path}: ${f}`);
+        }
+        expect(failures).toEqual([]);
+      },
+    );
+  }
+
+  test(
+    "CSS は HTML に埋め込まれ、外部スタイルシートを読み込まない",
+    sources("astro.config.mjs"),
+    async ({ page }) => {
+      await step(page, "/ を開く", () => page.goto("/"));
+      await expect(page.locator('link[rel="stylesheet"]')).toHaveCount(0);
+      await expect(page.locator("head style").first()).toBeAttached();
+    },
+  );
+});

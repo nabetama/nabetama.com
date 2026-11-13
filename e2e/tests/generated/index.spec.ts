@@ -16,7 +16,6 @@ defineInventoryTests({
     "link[rel=\"icon\"]",
     "link[rel=\"manifest\"]",
     "link[rel=\"sitemap\"]",
-    "link[rel=\"stylesheet\"]",
     "meta[name=\"author\"]",
     "meta[name=\"color-scheme\"]",
     "meta[name=\"description\"]",

@@ -58,6 +58,10 @@ export default defineConfig({
   output: "static",
   // リンクにカーソルを合わせた時点で遷移先を先読みし、ページ遷移を速くする
   prefetch: { prefetchAll: true, defaultStrategy: "hover" },
+  // CSS は約 10KB と小さいため HTML に埋め込み、描画を止めるリクエストを 1 本減らす
+  build: { inlineStylesheets: "always" },
+  // コメントの文字色が背景とのコントラスト比 4.5:1 を満たすテーマ (github-dark は約 3:1)
+  markdown: { shikiConfig: { theme: "github-dark-default" } },
   integrations: [
     mdx(),
     sitemap({

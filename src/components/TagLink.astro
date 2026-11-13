@@ -20,7 +20,7 @@ const { tag, count, class: className } = Astro.props;
 >
   <span>#{tag}</span>
   {count !== undefined && (
-    <span class="text-gray-400 dark:text-gray-500 tabular-nums" aria-label={`${count} 件`}>
+    <span class="text-gray-600 dark:text-gray-400 tabular-nums" aria-label={`${count} 件`}>
       {count}
     </span>
   )}
