@@ -107,19 +107,20 @@ export const MOBILE = {
   hasTouch: true,
 };
 
-/** 一覧ページ (/posts/ など) の記事リンクを上から順に取得する。 */
+/**
+ * 一覧ページ (/posts/ など) の記事リンクを上から順に取得する。
+ * 記事一覧の項目 (article.post-list-item) は見出しのリンクと公開日の time を持つ。
+ */
 export async function listPostLinks(page: Page) {
-  return page.locator('main a[href^="/posts/"]').evaluateAll((els) =>
-    els
-      .map((el) => ({
-        href: el.getAttribute("href") ?? "",
-        title:
-          el.querySelector("span, h3")?.textContent?.trim() ??
-          el.textContent?.trim() ??
-          "",
+  return page.locator("main article.post-list-item").evaluateAll((els) =>
+    els.map((el) => {
+      const link = el.querySelector("a");
+      return {
+        href: link?.getAttribute("href") ?? "",
+        title: link?.textContent?.trim() ?? "",
         date: el.querySelector("time")?.getAttribute("datetime") ?? "",
-      }))
-      .filter((l) => /^\/posts\/[^/]+\/$/.test(l.href)),
+      };
+    }),
   );
 }
 

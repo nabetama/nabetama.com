@@ -1,63 +1,83 @@
 ---
-const SITE_DOMAIN = "nabetama.com";
+import { NAV_ITEMS, SITE } from "@/site.config";
+import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props {
+  /** トップページではサイト名をページの h1 にする */
+  isHome?: boolean;
+}
+
+const { isHome = false } = Astro.props;
+const SiteName = isHome ? "h1" : "p";
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || path.startsWith(href);
+const linkClass =
+  "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors aria-[current=page]:text-gray-900 aria-[current=page]:dark:text-white aria-[current=page]:font-medium";
 ---
 
-<header class="mb-0">
-  <div class="flex items-center justify-between py-2">
-    <h1 class="text-xl font-bold">
+<header class="w-full max-w-5xl mx-auto px-6 lg:px-12 pt-3 pb-2 md:pt-8 md:pb-6">
+  <div class="flex items-center justify-between gap-4 py-2">
+    <SiteName class="text-xl font-bold tracking-tight">
       <a
         href="/"
-        class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-        >{SITE_DOMAIN}</a
+        rel="home"
+        class="text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+        >{SITE.name}</a
       >
-    </h1>
+    </SiteName>
 
-    <nav class="hidden md:flex items-center gap-6">
-      <a
-        href="/posts"
-        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        Archive
-      </a>
-      <a
-        href="/about"
-        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        About me
-      </a>
-    </nav>
+    <div class="flex items-center gap-2 md:gap-6">
+      <nav aria-label="メイン" class="hidden md:flex items-center gap-6">
+        {
+          NAV_ITEMS.map((item) => (
+            <a
+              href={item.href}
+              class={linkClass}
+              aria-current={isCurrent(item.href) ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
 
-    <button
-      id="menu-toggle"
-      class="md:hidden relative w-8 h-8 flex items-center justify-center"
-      aria-label="メニュー"
-      aria-expanded="false"
-    >
-      <span class="hamburger-line top-[8px]"></span>
-      <span class="hamburger-line top-[15px]"></span>
-      <span class="hamburger-line top-[22px]"></span>
-    </button>
+      <ThemeToggle />
+
+      <button
+        id="menu-toggle"
+        type="button"
+        class="md:hidden relative w-9 h-9 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
+        aria-label="メニュー"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <span class="hamburger-line top-[10px]"></span>
+        <span class="hamburger-line top-[17px]"></span>
+        <span class="hamburger-line top-[24px]"></span>
+      </button>
+    </div>
   </div>
 
   <nav
     id="mobile-menu"
+    aria-label="メイン (スマホ)"
     class="md:hidden overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out"
   >
     <div
-      class="flex flex-col gap-4 py-4 border-t border-gray-200 dark:border-darktheme-border"
+      class="flex flex-col gap-1 py-3 border-t border-gray-200 dark:border-darktheme-border"
     >
-      <a
-        href="/posts"
-        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        Archive
-      </a>
-      <a
-        href="/about"
-        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        About me
-      </a>
+      {
+        NAV_ITEMS.map((item) => (
+          <a
+            href={item.href}
+            class:list={[linkClass, "py-2"]}
+            aria-current={isCurrent(item.href) ? "page" : undefined}
+            tabindex="-1"
+          >
+            {item.label}
+          </a>
+        ))
+      }
     </div>
   </nav>
 </header>
@@ -65,27 +85,25 @@ const SITE_DOMAIN = "nabetama.com";
 <style>
   .hamburger-line {
     position: absolute;
-    left: 2px;
+    left: 6px;
     width: 24px;
     height: 2px;
+    border-radius: 1px;
     background-color: currentColor;
     transition: all 0.3s ease;
   }
 
-  /* Open state: top line rotates to form X */
   .menu-open #menu-toggle .hamburger-line:nth-child(1) {
-    top: 15px !important;
+    top: 17px;
     transform: rotate(45deg);
   }
 
-  /* Open state: middle line fades out */
   .menu-open #menu-toggle .hamburger-line:nth-child(2) {
     opacity: 0;
   }
 
-  /* Open state: bottom line rotates to form X */
   .menu-open #menu-toggle .hamburger-line:nth-child(3) {
-    top: 15px !important;
+    top: 17px;
     transform: rotate(-45deg);
   }
 </style>
@@ -95,25 +113,30 @@ const SITE_DOMAIN = "nabetama.com";
   const menu = document.getElementById("mobile-menu");
   const header = menu?.closest("header");
 
-  toggle?.addEventListener("click", () => {
-    const isOpen = header?.classList.toggle("menu-open");
-    toggle.setAttribute("aria-expanded", String(!!isOpen));
-
-    if (isOpen) {
-      menu!.style.maxHeight = menu!.scrollHeight + "px";
-      menu!.style.opacity = "1";
-    } else {
-      menu!.style.maxHeight = "0";
-      menu!.style.opacity = "0";
+  function setOpen(open: boolean) {
+    if (!toggle || !menu) return;
+    header?.classList.toggle("menu-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    menu.style.maxHeight = open ? `${menu.scrollHeight}px` : "0";
+    menu.style.opacity = open ? "1" : "0";
+    // 閉じているメニューのリンクに Tab でフォーカスが移らないようにする
+    for (const link of menu.querySelectorAll("a")) {
+      link.tabIndex = open ? 0 : -1;
     }
+  }
+
+  toggle?.addEventListener("click", () => {
+    setOpen(toggle.getAttribute("aria-expanded") !== "true");
   });
 
-  menu?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      header?.classList.remove("menu-open");
-      toggle?.setAttribute("aria-expanded", "false");
-      menu!.style.maxHeight = "0";
-      menu!.style.opacity = "0";
-    });
+  for (const link of menu?.querySelectorAll("a") ?? []) {
+    link.addEventListener("click", () => setOpen(false));
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && toggle?.getAttribute("aria-expanded") === "true") {
+      setOpen(false);
+      toggle.focus();
+    }
   });
 </script>

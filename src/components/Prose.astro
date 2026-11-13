@@ -1,0 +1,20 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<!-- 記事・固定ページの本文。文字組みは global.css の .prose-article で定義する -->
+<div
+  class:list={[
+    "prose prose-gray dark:prose-invert prose-article max-w-none",
+    "prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white",
+    "prose-pre:bg-neutral-900 dark:prose-pre:bg-neutral-950",
+    "prose-img:shadow-md prose-code:before:content-none prose-code:after:content-none",
+    className,
+  ]}
+>
+  <slot />
+</div>

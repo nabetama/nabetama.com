@@ -1,0 +1,33 @@
+---
+import type { Crumb } from "@/lib/structured-data";
+
+interface Props {
+  /** 先頭から順に並べる。最後の要素 (現在のページ) は href を省略する */
+  crumbs: Crumb[];
+}
+
+const { crumbs } = Astro.props;
+---
+
+<nav aria-label="パンくずリスト" class="mb-6 text-xs">
+  <ol class="breadcrumbs flex flex-wrap items-center text-gray-500 dark:text-darktheme-muted">
+    {
+      crumbs.map((crumb) => (
+        <li class="flex items-center min-w-0 last:flex-1">
+          {crumb.href ? (
+            <a
+              href={crumb.href}
+              class="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              {crumb.label}
+            </a>
+          ) : (
+            <span aria-current="page" class="truncate text-gray-600 dark:text-gray-400">
+              {crumb.label}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

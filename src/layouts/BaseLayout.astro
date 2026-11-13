@@ -1,82 +1,100 @@
 ---
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
+import SEO, { type ArticleMeta, type ImageMeta } from "@/components/SEO.astro";
+import { type JsonLd, person, website } from "@/lib/structured-data";
+import { SITE } from "@/site.config";
 import "@/styles/global.css";
 
 interface Props {
+  /** ページ固有のタイトル。省略するとサイト名だけになる (トップページ) */
   title?: string;
   description?: string;
-  ogImage?: string;
+  image?: ImageMeta;
   ogType?: "website" | "article";
-  wide?: boolean;
+  article?: ArticleMeta;
+  /** 本文の言語。省略時はサイトの言語 */
+  lang?: string;
+  noindex?: boolean;
+  /** ページ固有の構造化データ。WebSite と Person はすべてのページに付く */
+  jsonLd?: JsonLd[];
 }
-
-const SITE_DOMAIN = "nabetama.com";
-const defaultDescription =
-  "購入したものや気になったものを紹介したり学んだことをメモするブログです。";
-const defaultOgImage = `https://${SITE_DOMAIN}/default_og_image.jpg`;
 
 const {
   title,
-  description = defaultDescription,
-  ogImage = defaultOgImage,
+  description = SITE.description,
+  image = {
+    url: new URL(SITE.defaultOgImage.path, SITE.url).toString(),
+    width: SITE.defaultOgImage.width,
+    height: SITE.defaultOgImage.height,
+    alt: SITE.name,
+  },
   ogType = "website",
-  wide = false,
+  article,
+  lang = SITE.lang,
+  noindex = false,
+  jsonLd = [],
 } = Astro.props;
 
-const pageTitle = title ? `${title} | ${SITE_DOMAIN}` : SITE_DOMAIN;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const isHome = Astro.url.pathname === "/";
+const pageTitle = title ? `${title} | ${SITE.name}` : SITE.name;
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="ja">
+<html lang={lang} prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{pageTitle}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalURL} />
-
-    <!-- Open Graph -->
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={SITE_DOMAIN} />
-    <meta property="og:image" content={ogImage} />
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
-
-    <!-- RSS -->
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title={SITE_DOMAIN}
-      href="/feed.xml"
-    />
-
-    <!-- Theme -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 描画前にテーマを決め、ダークモードでの白いちらつきを防ぐ -->
     <script is:inline>
-      const savedTheme = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-        document.documentElement.classList.add("dark");
-      }
+      (() => {
+        const saved = localStorage.getItem("theme");
+        const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+        if (saved === "dark" || (!saved && prefersDark)) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
     </script>
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      content={SITE.themeColor.light}
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content={SITE.themeColor.dark}
+      media="(prefers-color-scheme: dark)"
+    />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/feed.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    <SEO
+      title={pageTitle}
+      socialTitle={title ?? SITE.name}
+      description={description}
+      canonical={canonical}
+      ogType={ogType}
+      image={image}
+      article={article}
+      noindex={noindex}
+      jsonLd={[website(), person(), ...jsonLd]}
+    />
+    <slot name="head" />
   </head>
   <body
-    class="antialiased min-h-screen bg-white dark:bg-darktheme-bg text-slate-900 dark:text-darktheme-font"
+    class="antialiased min-h-screen flex flex-col bg-white dark:bg-darktheme-bg text-gray-800 dark:text-darktheme-font"
   >
-    <div class="max-w-5xl mx-auto py-2 md:py-10 px-6 lg:px-12">
-      <Header />
-    </div>
-    <main>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md focus:bg-white focus:text-gray-900 focus:shadow-lg dark:focus:bg-neutral-800 dark:focus:text-white"
+      >本文へスキップ</a
+    >
+    <Header isHome={isHome} />
+    <main id="main" class="grow">
       <slot />
     </main>
     <Footer />

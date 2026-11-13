@@ -34,12 +34,30 @@ test.describe("ヘッダー・フッターのナビゲーション (PC)", () => 
   );
 
   test(
+    "ヘッダーの Tags リンクでタグ一覧に遷移し、現在のページとして示される",
+    sources("src/components/Header.astro", "src/pages/tags/index.astro"),
+    async ({ page }) => {
+      await step(page, "/ を開く", () => page.goto("/"));
+      await step(page, "ヘッダーの Tags をクリックする", () =>
+        page.locator("header nav").getByRole("link", { name: "Tags" }).click(),
+      );
+      await expect(page).toHaveURL(/\/tags\/$/);
+      await expect(page.locator("main h1")).toHaveText("Tags");
+      await expect(
+        page.locator("header nav").first().getByRole("link", { name: "Tags" }),
+      ).toHaveAttribute("aria-current", "page");
+    },
+  );
+
+  test(
     "ヘッダーのサイト名をクリックするとトップページに戻る",
     sources("src/components/Header.astro"),
     async ({ page }) => {
       await step(page, "/about/ を開く", () => page.goto("/about/"));
+      // トップページ以外ではサイト名は見出しにしない (ページの h1 は 1 つだけ)
+      await expect(page.locator("h1")).toHaveCount(1);
       await step(page, "ヘッダーのサイト名をクリックする", () =>
-        page.locator("header h1 a").click(),
+        page.locator('header a[rel="home"]').click(),
       );
       await expect(page).toHaveURL(/\/$/);
       await expect(page.locator("article.blog-card").first()).toBeVisible();
@@ -57,20 +75,29 @@ test.describe("ヘッダー・フッターのナビゲーション (PC)", () => 
   );
 
   test(
-    "フッターのリンク (Archive / About me / GitHub / X) の遷移先が正しい",
-    sources("src/components/Footer.astro"),
+    "フッターのリンク (Archive / Tags / About me / GitHub / X / RSS) の遷移先が正しい",
+    sources(
+      "src/components/Footer.astro",
+      "src/components/Icon.astro",
+      "src/site.config.ts",
+    ),
     async ({ page }) => {
       await step(page, "/ を開いてフッターまでスクロールする", async () => {
         await page.goto("/");
         await page.locator("footer").scrollIntoViewIfNeeded();
       });
       const footer = page.locator("footer");
-      await expect(
-        footer.getByRole("link", { name: "Archive" }),
-      ).toHaveAttribute("href", "/posts");
-      await expect(
-        footer.getByRole("link", { name: "About me" }),
-      ).toHaveAttribute("href", "/about");
+      for (const [label, href] of [
+        ["Archive", "/posts/"],
+        ["Tags", "/tags/"],
+        ["About me", "/about/"],
+        ["RSS フィード", "/feed.xml"],
+      ]) {
+        await expect(footer.getByRole("link", { name: label })).toHaveAttribute(
+          "href",
+          href,
+        );
+      }
       for (const [label, href] of [
         ["GitHub", "https://github.com/nabetama"],
         ["X (Twitter)", "https://x.com/nabetama"],
@@ -148,6 +175,24 @@ test.describe("ハンバーガーメニュー (スマホ)", () => {
           .click(),
       );
       await expect(page).toHaveURL(/\/about\/?$/);
+    },
+  );
+
+  test(
+    "メニューを開いた状態で Escape を押すと閉じ、ボタンにフォーカスが戻る",
+    sources("src/components/Header.astro"),
+    async ({ page }) => {
+      await step(page, "スマホ幅で / を開いてメニューを開く", async () => {
+        await page.goto("/");
+        await page.locator("#menu-toggle").click();
+        await expect(page.locator("#mobile-menu")).toHaveCSS("opacity", "1");
+      });
+      await step(page, "Escape を押す", () => page.keyboard.press("Escape"));
+      await expect(page.locator("#menu-toggle")).toHaveAttribute(
+        "aria-expanded",
+        "false",
+      );
+      await expect(page.locator("#menu-toggle")).toBeFocused();
     },
   );
 });

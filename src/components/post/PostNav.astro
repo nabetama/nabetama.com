@@ -1,0 +1,44 @@
+---
+import Icon from "@/components/Icon.astro";
+import type { Post } from "@/lib/posts";
+
+interface Props {
+  newer?: Post;
+  older?: Post;
+}
+
+const { newer, older } = Astro.props;
+const cardClass =
+  "group flex flex-col gap-1 p-4 rounded-lg border border-gray-200 dark:border-darktheme-border hover:border-gray-400 dark:hover:border-neutral-600 transition-colors";
+---
+
+{
+  (newer || older) && (
+    <nav aria-label="前後の記事" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {older ? (
+        <a href={older.href} rel="prev" class={cardClass}>
+          <span class="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-darktheme-muted">
+            <Icon name="arrow-left" class="w-3.5 h-3.5" />
+            前の記事
+          </span>
+          <span class="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 line-clamp-2">
+            {older.title}
+          </span>
+        </a>
+      ) : (
+        <span class="hidden sm:block" />
+      )}
+      {newer && (
+        <a href={newer.href} rel="next" class:list={[cardClass, "sm:text-right sm:items-end"]}>
+          <span class="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-darktheme-muted">
+            次の記事
+            <Icon name="arrow-right" class="w-3.5 h-3.5" />
+          </span>
+          <span class="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 line-clamp-2">
+            {newer.title}
+          </span>
+        </a>
+      )}
+    </nav>
+  )
+}

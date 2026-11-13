@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** 本文のコードブロック。右上のボタンでコードをクリップボードにコピーできる。 */
+type Props = HTMLAttributes<"pre">;
+---
+
+<div class="code-block relative group/code">
+  <pre {...Astro.props}><slot /></pre>
+  <button
+    type="button"
+    class="copy-code absolute top-2 right-2 px-2 py-1 rounded text-xs bg-neutral-700/80 text-neutral-100 opacity-0 group-hover/code:opacity-100 focus:opacity-100 transition-opacity"
+  >
+    コピー
+  </button>
+</div>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>(".copy-code")) {
+    button.addEventListener("click", async () => {
+      const code = button.parentElement?.querySelector("pre")?.innerText ?? "";
+      try {
+        await navigator.clipboard.writeText(code);
+        button.textContent = "コピーしました";
+      } catch {
+        button.textContent = "コピーできませんでした";
+      }
+      setTimeout(() => {
+        button.textContent = "コピー";
+      }, 2000);
+    });
+  }
+</script>

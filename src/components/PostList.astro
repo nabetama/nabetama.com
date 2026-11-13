@@ -1,0 +1,46 @@
+---
+import { formatDate, isoDate } from "@/lib/date";
+import type { Post } from "@/lib/posts";
+
+interface Props {
+  posts: Post[];
+  headingLevel?: "h2" | "h3";
+  /** false にすると要約を出さない (関連記事など狭い場所用) */
+  showDescription?: boolean;
+}
+
+const {
+  posts,
+  headingLevel: Heading = "h3",
+  showDescription = true,
+} = Astro.props;
+---
+
+<ul class="divide-y divide-gray-100 dark:divide-darktheme-border">
+  {
+    posts.map((post) => (
+      <li>
+        <article class="post-list-item relative group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 py-4 px-3 -mx-3 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
+          <time
+            class="text-sm text-gray-500 dark:text-darktheme-muted shrink-0 sm:w-32 tabular-nums"
+            datetime={isoDate(post.date)}
+          >
+            {formatDate(post.date)}
+          </time>
+          <div class="flex-1 min-w-0">
+            <Heading class="text-base font-medium leading-snug text-gray-900 dark:text-gray-100 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors">
+              <a href={post.href} class="before:absolute before:inset-0 before:rounded-lg">
+                {post.title}
+              </a>
+            </Heading>
+            {showDescription && (
+              <p class="text-sm text-gray-600 dark:text-darktheme-muted mt-1 line-clamp-2 leading-relaxed">
+                {post.description}
+              </p>
+            )}
+          </div>
+        </article>
+      </li>
+    ))
+  }
+</ul>

@@ -1,0 +1,24 @@
+---
+/** MDX の本文で使う画像。キャプションに alt を表示する。 */
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
+const { src, alt, width = 640, height = 360 } = Astro.props;
+---
+
+<figure class="my-8 mx-0">
+  <img
+    class="mb-2"
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading="lazy"
+    decoding="async"
+  />
+  <figcaption>{alt}</figcaption>
+</figure>

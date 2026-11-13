@@ -1,46 +1,31 @@
 ---
-import { getCollection, render } from "astro:content";
-import Image from "@/components/Image.astro";
+import { render } from "astro:content";
+import { mdxComponents } from "@/components/mdx";
 import PostLayout from "@/layouts/PostLayout.astro";
+import { adjacentPosts, getPosts, relatedPosts } from "@/lib/posts";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("posts");
+  const posts = await getPosts();
   return posts.map((post) => ({
     params: { slug: post.id },
-    props: { post },
+    props: {
+      post,
+      related: relatedPosts(post, posts),
+      ...adjacentPosts(post, posts),
+    },
   }));
 }
 
-const { post } = Astro.props;
-const { Content, headings } = await render(post);
-
-const SITE_DOMAIN = "nabetama.com";
-const defaultOgImage = `https://${SITE_DOMAIN}/default_og_image.jpg`;
-
-function extractFirstImage(rawContent: string): string | null {
-  const imgMatch = rawContent.match(/<Image\s+src="([^"]+)"/);
-  if (imgMatch) {
-    return imgMatch[1];
-  }
-  const mdImgMatch = rawContent.match(/!\[.*?\]\(([^)]+)\)/);
-  if (mdImgMatch) {
-    return mdImgMatch[1];
-  }
-  return null;
-}
-
-const firstImage = extractFirstImage(post.body || "");
-const ogImage = firstImage || defaultOgImage;
+const { post, related, newer, older } = Astro.props;
+const { Content, headings } = await render(post.entry);
 ---
 
 <PostLayout
-  title={post.data.title}
-  date={post.data.date}
-  lastModDate={post.data.lastModDate}
-  description={post.data.description}
-  ogImage={ogImage}
-  tags={post.data.tags}
+  post={post}
   headings={headings}
+  related={related}
+  newer={newer}
+  older={older}
 >
-  <Content components={{ Image }} />
+  <Content components={mdxComponents} />
 </PostLayout>

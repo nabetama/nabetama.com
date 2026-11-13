@@ -146,7 +146,9 @@ export async function collectInventory({ baseURL, maxSamples = Infinity }) {
             const res = await page.goto(
               new URL(encodeURI(decodeURI(url)), baseURL).href,
               {
-                waitUntil: "load",
+                // UI はページ自身の DOM から集めるため、外部の埋め込み (imgur など) の読み込み完了は待たない。
+                // 外部サイトが応答しないと load イベントが来ず、巡回全体が止まる。
+                waitUntil: "domcontentloaded",
               },
             );
             entry.status ??= res?.status() ?? null;

@@ -9,7 +9,14 @@ import {
 } from "./fixtures";
 
 async function mainPaths(page: import("@playwright/test").Page) {
-  return ["/", "/posts/", "/about/", "/roastnote/", await latestPostPath(page)];
+  return [
+    "/",
+    "/posts/",
+    "/tags/",
+    "/about/",
+    "/roastnote/",
+    await latestPostPath(page),
+  ];
 }
 
 test.describe("品質チェック (PC)", () => {
@@ -17,7 +24,7 @@ test.describe("品質チェック (PC)", () => {
     "主要ページで JavaScript エラーとコンソールエラーが出ない",
     sources(
       "src/components/Header.astro",
-      "src/components/TableOfContents.astro",
+      "src/components/post/TableOfContents.astro",
       "src/layouts/PostLayout.astro",
     ),
     async ({ page, issues }) => {
@@ -124,6 +131,68 @@ test.describe("品質チェック (スマホ)", () => {
         }
       }
       expect(overflow).toEqual([]);
+    },
+  );
+});
+
+test.describe("表示テーマの切り替え", () => {
+  test(
+    "ヘッダーのボタンでダークモードが切り替わり、再読み込み後も保たれる",
+    sources("src/components/ThemeToggle.astro", "src/layouts/BaseLayout.astro"),
+    async ({ page }) => {
+      await page.emulateMedia({ colorScheme: "light" });
+      await step(page, "ライトモードで / を開く", () => page.goto("/"));
+      const button = page.locator("#theme-toggle");
+      await expect(page.locator("html")).not.toHaveClass(/dark/);
+      await expect(button).toHaveAttribute("aria-pressed", "false");
+      await step(page, "テーマ切り替えボタンをクリックする", () =>
+        button.click(),
+      );
+      await expect(page.locator("html")).toHaveClass(/dark/);
+      await expect(button).toHaveAttribute("aria-pressed", "true");
+      const bg = await page
+        .locator("body")
+        .evaluate((el) => getComputedStyle(el).backgroundColor);
+      expect(bg, "ダークモードの背景色").not.toBe("rgb(255, 255, 255)");
+      await step(page, "再読み込みする", () => page.reload());
+      await expect(page.locator("html")).toHaveClass(/dark/);
+    },
+  );
+
+  test(
+    "OS がダークモードでもライトを保存していれば、ダーク用のスタイルが当たらない",
+    sources("src/styles/global.css", "src/layouts/BaseLayout.astro"),
+    async ({ page }) => {
+      await page.emulateMedia({ colorScheme: "dark" });
+      await step(
+        page,
+        "ライト設定を保存してダークモードの OS で / を開く",
+        async () => {
+          await page.goto("/");
+          await page.evaluate(() => localStorage.setItem("theme", "light"));
+          await page.reload();
+        },
+      );
+      const bg = await page
+        .locator("body")
+        .evaluate((el) => getComputedStyle(el).backgroundColor);
+      expect(bg).toBe("rgb(255, 255, 255)");
+    },
+  );
+});
+
+test.describe("キーボード操作", () => {
+  test(
+    "最初の Tab で「本文へスキップ」が表示され、Enter で本文へ移動する",
+    sources("src/layouts/BaseLayout.astro"),
+    async ({ page }) => {
+      await step(page, "/ を開く", () => page.goto("/"));
+      await step(page, "Tab を押す", () => page.keyboard.press("Tab"));
+      const skip = page.getByRole("link", { name: "本文へスキップ" });
+      await expect(skip).toBeFocused();
+      await expect(skip).toBeInViewport();
+      await step(page, "Enter を押す", () => page.keyboard.press("Enter"));
+      await expect(page).toHaveURL(/#main$/);
     },
   );
 });

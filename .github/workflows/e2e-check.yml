@@ -20,3 +20,14 @@ jobs:
           node e2e/lib/check-coverage.mjs --commits-only --strict
           --base origin/${{ github.base_ref }}
           --head ${{ github.event.pull_request.head.sha }}
+
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      # src/lib の純粋な関数の単体テスト。Node.js の型除去で .ts を直接実行するため依存のインストールは不要
+      - name: 単体テスト
+        run: node --test src/lib/

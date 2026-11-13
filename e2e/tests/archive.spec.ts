@@ -61,3 +61,45 @@ test.describe("記事一覧 (Archive)", () => {
     },
   );
 });
+
+test.describe("記事一覧 (Archive) の年ごとの区切り", () => {
+  test(
+    "年の見出しごとに記事がまとまり、見出しの年と記事の公開年が一致する",
+    sources("src/pages/posts/index.astro", "src/lib/posts.ts"),
+    async ({ page }) => {
+      await step(page, "/posts/ を開く", () => page.goto("/posts/"));
+      const sections = await page.locator("main section").evaluateAll((els) =>
+        els.map((el) => ({
+          year: el.querySelector("h2")?.textContent?.trim() ?? "",
+          dates: [...el.querySelectorAll("article.post-list-item time")].map(
+            (t) => t.getAttribute("datetime") ?? "",
+          ),
+        })),
+      );
+      expect(sections.length).toBeGreaterThan(0);
+      const mismatched = sections.flatMap((s) =>
+        s.dates
+          .filter((d) => !d.startsWith(s.year))
+          .map((d) => `${s.year}: ${d}`),
+      );
+      expect(mismatched).toEqual([]);
+      const years = sections.map((s) => Number(s.year));
+      expect([...years].sort((a, b) => b - a)).toEqual(years);
+    },
+  );
+
+  test(
+    "年のリンクをクリックすると、その年の見出しへ移動する",
+    sources("src/pages/posts/index.astro"),
+    async ({ page }) => {
+      await step(page, "/posts/ を開く", () => page.goto("/posts/"));
+      const link = page.locator("nav[aria-label='年で移動'] a").last();
+      const href = (await link.getAttribute("href")) ?? "";
+      await step(page, `年のリンク ${href} をクリックする`, () => link.click());
+      await expect(page.locator(href)).toBeInViewport();
+      await expect(link).toContainText(
+        `(${await page.locator(`section:has(${href}) article.post-list-item`).count()})`,
+      );
+    },
+  );
+});

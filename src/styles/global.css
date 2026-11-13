@@ -1,7 +1,17 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ダークモードは OS 設定ではなく <html class="dark"> で切り替える (BaseLayout の初期化スクリプトが付ける) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
   --color-darktheme-bg: #0a0a0a;
   --color-darktheme-font: #e5e5e5;
   --color-darktheme-muted: #a3a3a3;
@@ -9,88 +19,213 @@
   --color-darktheme-card: #171717;
 }
 
-html {
-  font-size: 100%;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
-    "Hiragino Sans", Meiryo, sans-serif, "Segoe UI Emoji";
-}
-
-@media (min-width: 768px) {
+@layer base {
   html {
-    font-size: 16px;
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    line-break: strict;
+    overflow-wrap: break-word;
+  }
+
+  /* 見出しは日本語の文節で折り返し、行ごとの長さをそろえる */
+  h1,
+  h2,
+  h3 {
+    word-break: auto-phrase;
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  ::selection {
+    background-color: rgb(99 102 241 / 0.3);
+    color: inherit;
+  }
+
+  /* キーボード操作時だけフォーカス位置をはっきり見せる */
+  :focus-visible {
+    outline: 2px solid var(--color-indigo-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* 固定表示の目次バーに見出しが隠れないようにする */
+  :target,
+  article :is(h2, h3) {
+    scroll-margin-top: 5rem;
   }
 }
 
-code,
-pre code {
-  font-family:
-    SFMono-Regular,
-    Consolas,
-    "Liberation Mono",
-    Menlo,
-    monospace,
-    Apple Color Emoji,
-    "Segoe UI Emoji",
-    "Segoe UI Symbol",
-    "Noto Color Emoji";
-  font-size: 0.9em;
-}
+@layer components {
+  /* 記事・固定ページの本文。日本語の長文を読みやすい行長・行間にする */
+  .prose-article {
+    font-size: 1rem;
+    line-height: 1.9;
+    letter-spacing: 0.02em;
 
-a:hover {
-  color: rgb(203 213 225 / var(--tw-text-opacity, 1));
-}
+    @media (min-width: 768px) {
+      font-size: 1.0625rem;
+    }
 
-img {
-  max-width: 100%;
-  margin: 0 auto;
-  height: auto;
-}
+    & :where(p) {
+      margin-block: 1.25em;
+    }
 
-p {
-  overflow-wrap: break-word;
-}
+    & :where(h2) {
+      margin-top: 2.5em;
+      padding-bottom: 0.35em;
+      border-bottom: 1px solid var(--color-gray-200);
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+    }
 
-::selection {
-  background-color: rgba(99, 102, 241, 0.3);
-  color: inherit;
-}
+    & :where(h3) {
+      margin-top: 2em;
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+    }
 
-/* Blog card hover effects */
-.blog-card {
-  box-shadow: none;
-}
+    & :where(a) {
+      color: var(--color-indigo-600);
+      text-decoration-line: underline;
+      text-decoration-color: rgb(99 102 241 / 0.4);
+      text-underline-offset: 0.2em;
+      transition: text-decoration-color 0.15s;
+    }
 
-.blog-card:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
+    & :where(a:hover) {
+      text-decoration-color: currentColor;
+    }
 
-@media (prefers-color-scheme: dark) {
-  .blog-card {
-    box-shadow: none;
+    & :where(:not(pre) > code) {
+      padding: 0.15em 0.4em;
+      border-radius: 0.25rem;
+      background-color: var(--color-gray-100);
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    & :where(:not(pre) > code)::before,
+    & :where(:not(pre) > code)::after {
+      content: none;
+    }
+
+    & :where(pre) {
+      line-height: 1.6;
+      letter-spacing: 0;
+      border-radius: 0.5rem;
+    }
+
+    & :where(blockquote) {
+      font-style: normal;
+      font-weight: 400;
+      color: var(--color-gray-600);
+      border-left-color: var(--color-gray-300);
+    }
+
+    & :where(blockquote p)::before,
+    & :where(blockquote p)::after {
+      content: none;
+    }
+
+    & :where(img) {
+      border-radius: 0.5rem;
+    }
+
+    & :where(li)::marker {
+      color: var(--color-gray-400);
+    }
+
+    & :where(figure figcaption) {
+      text-align: center;
+      font-size: 0.8125rem;
+    }
+
+    & :where(iframe) {
+      max-width: 100%;
+      margin-inline: auto;
+    }
   }
 
-  .blog-card:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    transform: translateY(-2px);
-  }
-}
+  .dark .prose-article {
+    & :where(h2) {
+      border-bottom-color: var(--color-darktheme-border);
+    }
 
-/* 見出しのスクロール位置調整 */
-article :is(h2, h3) {
-  scroll-margin-top: 6rem;
+    & :where(a) {
+      color: var(--color-indigo-300);
+      text-decoration-color: rgb(165 180 252 / 0.4);
+    }
+
+    & :where(:not(pre) > code) {
+      background-color: var(--color-neutral-800);
+    }
+
+    & :where(blockquote) {
+      color: var(--color-darktheme-muted);
+      border-left-color: var(--color-neutral-700);
+    }
+
+    & :where(li)::marker {
+      color: var(--color-gray-500);
+    }
+  }
+
+  /* rehype-content が表を包む要素。表だけを横スクロールさせる */
+  .table-scroll {
+    overflow-x: auto;
+    margin-block: 1.5em;
+
+    & > table {
+      margin-block: 0;
+    }
+  }
+
+  /* パンくずの区切り。li の数を増やさないよう疑似要素で描く */
+  .breadcrumbs li + li::before {
+    content: "/";
+    margin-inline: 0.5rem;
+    color: var(--color-gray-300);
+  }
+
+  .dark .breadcrumbs li + li::before {
+    color: var(--color-neutral-700);
+  }
 }
 
 /* 埋め込みコンテンツの中央寄せ */
 iframe,
-blockquote.imgur-embed-pub {
+blockquote.imgur-embed-pub,
+blockquote.twitter-tweet {
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* imgur埋め込み（インラインスタイル上書き） */
+/* imgur 埋め込み (インラインスタイル上書き) */
 iframe[class*="imgur-embed-iframe-pub"] {
   margin-left: auto !important;
   margin-right: auto !important;
