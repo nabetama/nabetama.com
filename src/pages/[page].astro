@@ -1,0 +1,22 @@
+---
+import { getCollection, render } from "astro:content";
+import { mdxComponents } from "@/components/mdx";
+import PageLayout from "@/layouts/PageLayout.astro";
+
+/** src/content/pages の各ファイルを /<ファイル名>/ の固定ページとして出す。 */
+export async function getStaticPaths() {
+  const pages = await getCollection("pages");
+  return pages.map((page) => ({ params: { page: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<PageLayout
+  title={page.data.title}
+  description={page.data.description}
+  lang={page.data.lang}
+>
+  <Content components={mdxComponents} />
+</PageLayout>

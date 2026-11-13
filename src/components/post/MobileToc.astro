@@ -1,0 +1,124 @@
+---
+import type { MarkdownHeading } from "astro";
+import Icon from "@/components/Icon.astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const linkClass =
+  "block py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-l-2 -ml-[2px] border-transparent transition-colors";
+---
+
+{
+  headings.length > 0 && (
+    <div
+      id="mobile-toc-bar"
+      class="xl:hidden sticky top-0 z-40 bg-white/90 dark:bg-darktheme-bg/90 backdrop-blur border-b border-gray-200 dark:border-darktheme-border"
+    >
+      <div class="max-w-5xl mx-auto px-6 lg:px-12 flex items-center justify-end h-10">
+        <button
+          id="mobile-toc-toggle"
+          type="button"
+          class="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          aria-label="目次"
+          aria-controls="mobile-toc-dropdown"
+          aria-expanded="false"
+        >
+          目次
+          <Icon name="chevron-down" class="w-3 h-3 transition-transform duration-200" />
+        </button>
+      </div>
+      <div
+        id="mobile-toc-dropdown"
+        class="overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-in-out"
+      >
+        <nav aria-label="目次 (スマホ)" class="max-w-5xl mx-auto px-6 lg:px-12 py-4 max-h-[60vh] overflow-y-auto">
+          <div class="space-y-1 border-l-2 border-gray-200 dark:border-neutral-700">
+            <a href="#" class:list={["mobile-toc-top pl-3", linkClass]} tabindex="-1">
+              ページトップへ
+            </a>
+            {headings.map((heading) => (
+              <a
+                href={`#${heading.slug}`}
+                class:list={["mobile-toc-link", linkClass, heading.depth === 2 ? "pl-3" : "pl-6"]}
+                data-slug={heading.slug}
+                tabindex="-1"
+              >
+                {heading.text}
+              </a>
+            ))}
+          </div>
+        </nav>
+      </div>
+    </div>
+  )
+}
+
+<script>
+  const toggle = document.getElementById("mobile-toc-toggle");
+  const dropdown = document.getElementById("mobile-toc-dropdown");
+
+  if (toggle && dropdown) {
+    const links = dropdown.querySelectorAll<HTMLAnchorElement>("a");
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      dropdown.style.maxHeight = open ? `${dropdown.scrollHeight}px` : "0";
+      dropdown.style.opacity = open ? "1" : "0";
+      toggle.querySelector("svg")?.classList.toggle("rotate-180", open);
+      for (const link of links) link.tabIndex = open ? 0 : -1;
+    };
+
+    // ドロップダウンは文書の流れの中にあり、閉じるとページの高さが縮む。
+    // 開いたままスクロール先を計算すると閉じた分だけ行き過ぎるため、閉じ終わってからスクロールする。
+    const afterClosed = (callback: () => void) => {
+      let done = false;
+      const run = () => {
+        if (done) return;
+        done = true;
+        dropdown.removeEventListener("transitionend", onEnd);
+        callback();
+      };
+      const onEnd = (e: TransitionEvent) => {
+        if (e.target === dropdown && e.propertyName === "max-height") run();
+      };
+      dropdown.addEventListener("transitionend", onEnd);
+      // transitionend が来ない場合 (アニメーション無効設定など) の保険。duration-300 より少し長く待つ
+      setTimeout(run, 350);
+    };
+
+    toggle.addEventListener("click", () => {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+    });
+
+    dropdown.querySelector(".mobile-toc-top")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      setOpen(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    for (const link of dropdown.querySelectorAll<HTMLAnchorElement>(".mobile-toc-link")) {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const slug = link.dataset.slug ?? "";
+        const target = document.getElementById(slug);
+        setOpen(false);
+        if (target) {
+          afterClosed(() => {
+            target.scrollIntoView({ behavior: "smooth" });
+            history.replaceState(null, "", `#${slug}`);
+          });
+        }
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>

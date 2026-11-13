@@ -1,0 +1,27 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/**
+ * 本文の見出し (h2/h3)。見出しへの直リンクを置き、URL で該当箇所を共有できるようにする。
+ * リンクは見出しにカーソルを合わせたときかフォーカスしたときだけ見える。
+ */
+type Props = HTMLAttributes<"h2"> & { level: 2 | 3 };
+
+const { level, ...rest } = Astro.props;
+const Tag = level === 2 ? "h2" : "h3";
+---
+
+<Tag {...rest} class:list={[rest.class, "group/heading relative"]}>
+  <slot />
+  {
+    rest.id && (
+      <a
+        href={`#${rest.id}`}
+        class="heading-anchor ml-2 no-underline! text-gray-500 dark:text-gray-400 opacity-0 group-hover/heading:opacity-100 focus:opacity-100 transition-opacity"
+        aria-label="この見出しへのリンク"
+      >
+        #
+      </a>
+    )
+  }
+</Tag>

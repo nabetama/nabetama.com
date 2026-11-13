@@ -1,0 +1,10 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** Markdown の画像 (`![alt](src)`)。最初の画面に入らない画像の読み込みを後回しにする。 */
+type Props = HTMLAttributes<"img">;
+
+const { loading = "lazy", decoding = "async", ...rest } = Astro.props;
+---
+
+<img loading={loading} decoding={decoding} {...rest} />

@@ -7,20 +7,37 @@ defineInventoryTests({
   "file": "src/pages/posts/[...slug].astro",
   "route": "/posts/[...slug]/",
   "kind": "page",
-  "sample": "/posts/1999-01-01/",
+  "sample": "/posts/2016-05-12/",
   "status": 200,
   "head": [
     "link[rel=\"alternate\"]",
+    "link[rel=\"apple-touch-icon\"]",
     "link[rel=\"canonical\"]",
-    "link[rel=\"stylesheet\"]",
+    "link[rel=\"icon\"]",
+    "link[rel=\"manifest\"]",
+    "link[rel=\"sitemap\"]",
+    "meta[name=\"author\"]",
+    "meta[name=\"color-scheme\"]",
     "meta[name=\"description\"]",
+    "meta[name=\"theme-color\"]",
     "meta[name=\"twitter:card\"]",
+    "meta[name=\"twitter:creator\"]",
     "meta[name=\"twitter:description\"]",
     "meta[name=\"twitter:image\"]",
+    "meta[name=\"twitter:image:alt\"]",
+    "meta[name=\"twitter:site\"]",
     "meta[name=\"twitter:title\"]",
     "meta[name=\"viewport\"]",
+    "meta[property=\"article:author\"]",
+    "meta[property=\"article:modified_time\"]",
+    "meta[property=\"article:published_time\"]",
+    "meta[property=\"article:tag\"]",
     "meta[property=\"og:description\"]",
     "meta[property=\"og:image\"]",
+    "meta[property=\"og:image:alt\"]",
+    "meta[property=\"og:image:height\"]",
+    "meta[property=\"og:image:width\"]",
+    "meta[property=\"og:locale\"]",
     "meta[property=\"og:site_name\"]",
     "meta[property=\"og:title\"]",
     "meta[property=\"og:type\"]",
@@ -35,7 +52,7 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-18/",
+      "desktop": "/posts/2017-01-17/",
       "mobile": null,
       "isNew": false
     },
@@ -47,7 +64,7 @@ defineInventoryTests({
       "linkKind": "anchor",
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-18/",
+      "desktop": "/posts/2017-01-17/",
       "mobile": null,
       "isNew": false
     },
@@ -59,7 +76,7 @@ defineInventoryTests({
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-16/",
+      "desktop": "/posts/2017-01-17/",
       "mobile": null,
       "isNew": false
     },
@@ -72,7 +89,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -84,7 +101,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -96,19 +113,31 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "footer <nav>",
+      "key": "body a[href=\"#:anchor\"]",
+      "type": "interactive",
+      "selector": "body a[href^=\"#\"]",
+      "text": "",
+      "linkKind": "anchor",
+      "href": null,
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "footer <nav aria-label=\"フッター\">",
       "type": "landmark",
-      "selector": "footer nav",
+      "selector": "footer nav[aria-label=\"フッター\"]",
       "text": "",
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -120,7 +149,19 @@ defineInventoryTests({
       "href": "https://github.com/nabetama",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "footer a[aria-label=\"RSS フィード\"][href=\"/feed.xml\"]",
+      "type": "interactive",
+      "selector": "footer a[aria-label=\"RSS フィード\"][href=\"/feed.xml\"]",
+      "text": "",
+      "linkKind": "internal",
+      "href": "/feed.xml",
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -132,7 +173,7 @@ defineInventoryTests({
       "href": "https://x.com/nabetama",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -144,49 +185,61 @@ defineInventoryTests({
       "href": "/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "footer a[href=\"/about\"] \"About me\"",
+      "key": "footer a[href=\"/about/\"] \"About me\"",
       "type": "interactive",
-      "selector": "footer a[href=\"/about\"]",
+      "selector": "footer a[href=\"/about/\"]",
       "text": "About me",
       "linkKind": "internal",
-      "href": "/about",
+      "href": "/about/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "footer a[href=\"/posts\"] \"Archive\"",
+      "key": "footer a[href=\"/posts/\"] \"Archive\"",
       "type": "interactive",
-      "selector": "footer a[href=\"/posts\"]",
+      "selector": "footer a[href=\"/posts/\"]",
       "text": "Archive",
       "linkKind": "internal",
-      "href": "/posts",
+      "href": "/posts/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "header <h1>",
+      "key": "footer a[href=\"/tags/\"] \"Tags\"",
+      "type": "interactive",
+      "selector": "footer a[href=\"/tags/\"]",
+      "text": "Tags",
+      "linkKind": "internal",
+      "href": "/tags/",
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "header <nav aria-label=\"メイン (スマホ)\">",
       "type": "landmark",
-      "selector": "header h1",
+      "selector": "header nav[aria-label=\"メイン (スマホ)\"]",
       "text": "",
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
-      "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "desktop": null,
+      "mobile": null,
       "isNew": false
     },
     {
-      "key": "header <nav>",
+      "key": "header <nav aria-label=\"メイン\">",
       "type": "landmark",
-      "selector": "header nav",
+      "selector": "header nav[aria-label=\"メイン\"]",
       "text": "",
       "linkKind": null,
       "href": null,
@@ -204,28 +257,40 @@ defineInventoryTests({
       "href": "/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "header a[href=\"/about\"] \"About me\"",
+      "key": "header a[href=\"/about/\"] \"About me\"",
       "type": "interactive",
-      "selector": "header a[href=\"/about\"]",
+      "selector": "header a[href=\"/about/\"]",
       "text": "About me",
       "linkKind": "internal",
-      "href": "/about",
+      "href": "/about/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
       "mobile": null,
       "isNew": false
     },
     {
-      "key": "header a[href=\"/posts\"] \"Archive\"",
+      "key": "header a[href=\"/posts/\"] \"Archive\"",
       "type": "interactive",
-      "selector": "header a[href=\"/posts\"]",
+      "selector": "header a[href=\"/posts/\"]",
       "text": "Archive",
       "linkKind": "internal",
-      "href": "/posts",
+      "href": "/posts/",
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": null,
+      "isNew": false
+    },
+    {
+      "key": "header a[href=\"/tags/\"] \"Tags\"",
+      "type": "interactive",
+      "selector": "header a[href=\"/tags/\"]",
+      "text": "Tags",
+      "linkKind": "internal",
+      "href": "/tags/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
       "mobile": null,
@@ -240,7 +305,19 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": true,
       "desktop": null,
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "header button#theme-toggle[aria-label=\"ダークモード\"]",
+      "type": "interactive",
+      "selector": "header button#theme-toggle[aria-label=\"ダークモード\"]",
+      "text": "",
+      "linkKind": null,
+      "href": null,
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -264,7 +341,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -276,7 +353,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -288,7 +365,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -300,19 +377,43 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "main <nav>",
+      "key": "main <nav aria-label=\"パンくずリスト\">",
       "type": "landmark",
-      "selector": "main nav",
+      "selector": "main nav[aria-label=\"パンくずリスト\"]",
       "text": "",
       "linkKind": null,
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "main <nav aria-label=\"前後の記事\">",
+      "type": "landmark",
+      "selector": "main nav[aria-label=\"前後の記事\"]",
+      "text": "",
+      "linkKind": null,
+      "href": null,
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "main <nav aria-label=\"目次 (スマホ)\">",
+      "type": "landmark",
+      "selector": "main nav[aria-label=\"目次 (スマホ)\"]",
+      "text": "",
+      "linkKind": null,
+      "href": null,
+      "ariaExpanded": false,
+      "desktop": null,
+      "mobile": null,
       "isNew": false
     },
     {
@@ -324,31 +425,43 @@ defineInventoryTests({
       "href": "/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "main a[href=\"/posts\"] \"Blog\"",
+      "key": "main a[href=\"/posts/:slug/\"]",
       "type": "interactive",
-      "selector": "main a[href=\"/posts\"]",
-      "text": "Blog",
-      "linkKind": "internal",
-      "href": "/posts",
+      "selector": "main a[href^=\"/posts/\"]",
+      "text": "",
+      "linkKind": "dynamic",
+      "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
-      "key": "main a[href=\"/posts\"] \"すべての記事を見る\"",
+      "key": "main a[href=\"/posts/\"] \"Archive\"",
       "type": "interactive",
-      "selector": "main a[href=\"/posts\"]",
+      "selector": "main a[href=\"/posts/\"]",
+      "text": "Archive",
+      "linkKind": "internal",
+      "href": "/posts/",
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "main a[href=\"/posts/\"] \"すべての記事を見る\"",
+      "type": "interactive",
+      "selector": "main a[href=\"/posts/\"]",
       "text": "すべての記事を見る",
       "linkKind": "internal",
-      "href": "/posts",
+      "href": "/posts/",
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -360,7 +473,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": "/posts/2017-01-16/",
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     },
     {
@@ -388,6 +501,42 @@ defineInventoryTests({
       "isNew": false
     },
     {
+      "key": "main a[href=\"https://b.hatena.ne.jp/entry/s/nabetama.com:page\"] \"B!はてなブックマーク\"",
+      "type": "interactive",
+      "selector": "main a[href^=\"https://b.hatena.ne.jp/entry/s/nabetama.com\"]",
+      "text": "B!はてなブックマーク",
+      "linkKind": "share",
+      "href": "https://b.hatena.ne.jp/entry/s/nabetama.com/posts/2017-01-16/",
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "main a[href=\"https://x.com/intent/post:page\"] \"ポスト\"",
+      "type": "interactive",
+      "selector": "main a[href^=\"https://x.com/intent/post\"]",
+      "text": "ポスト",
+      "linkKind": "share",
+      "href": "https://x.com/intent/post?text=%E6%98%A8%E6%97%A5%E3%81%AE%E3%83%A9%E3%83%B3%E3%83%8B%E3%83%B3%E3%82%B0&url=https%3A%2F%2Fnabetama.com%2Fposts%2F2017-01-16%2F",
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
+      "key": "main button \"URL をコピー\"",
+      "type": "interactive",
+      "selector": "main button",
+      "text": "URL をコピー",
+      "linkKind": null,
+      "href": null,
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
+      "isNew": false
+    },
+    {
       "key": "main button#mobile-toc-toggle[aria-label=\"目次\"]",
       "type": "interactive",
       "selector": "main button#mobile-toc-toggle[aria-label=\"目次\"]",
@@ -396,7 +545,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": true,
       "desktop": null,
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2016-05-12/",
       "isNew": false
     },
     {
@@ -408,7 +557,7 @@ defineInventoryTests({
       "href": null,
       "ariaExpanded": false,
       "desktop": null,
-      "mobile": "/posts/2017-01-18/",
+      "mobile": "/posts/2016-05-12/",
       "isNew": false
     },
     {
@@ -421,6 +570,18 @@ defineInventoryTests({
       "ariaExpanded": false,
       "desktop": null,
       "mobile": null,
+      "isNew": false
+    },
+    {
+      "key": "main main#main",
+      "type": "structure",
+      "selector": "#main",
+      "text": "",
+      "linkKind": null,
+      "href": null,
+      "ariaExpanded": false,
+      "desktop": "/posts/2017-01-16/",
+      "mobile": "/posts/2017-01-16/",
       "isNew": false
     }
   ]

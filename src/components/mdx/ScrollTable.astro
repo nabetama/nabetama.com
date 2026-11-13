@@ -1,0 +1,10 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/** Markdown の表。表だけを横スクロールさせ、スマホ幅でページ全体がはみ出さないようにする。 */
+type Props = HTMLAttributes<"table">;
+---
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="表 (横にスクロールできます)">
+  <table {...Astro.props}><slot /></table>
+</div>

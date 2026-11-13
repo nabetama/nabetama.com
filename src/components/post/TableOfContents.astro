@@ -1,0 +1,64 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+---
+
+{
+  headings.length > 0 && (
+    <nav aria-label="目次" class="toc-nav">
+      <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 tracking-wider">
+        目次
+      </p>
+      <ul class="space-y-1 border-l-2 border-gray-200 dark:border-neutral-700">
+        {headings.map((heading) => (
+          <li>
+            <a
+              href={`#${heading.slug}`}
+              class:list={[
+                "toc-link block py-1 text-[13px] leading-snug border-l-2 -ml-[2px] border-transparent transition-colors duration-150",
+                "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white",
+                "aria-[current=location]:text-indigo-600 aria-[current=location]:border-indigo-600 aria-[current=location]:font-medium",
+                "dark:aria-[current=location]:text-indigo-300 dark:aria-[current=location]:border-indigo-300",
+                heading.depth === 2 ? "pl-3" : "pl-6",
+              ]}
+              data-slug={heading.slug}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>(".toc-link");
+
+  // 画面上端から 80px〜(高さの 20%) の帯に入った見出しを「現在位置」にする
+  function setActive(slug: string) {
+    for (const link of tocLinks) {
+      if (link.dataset.slug === slug) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    }
+  }
+
+  if (tocLinks.length > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.find((e) => e.isIntersecting);
+        if (visible) setActive(visible.target.id);
+      },
+      { rootMargin: "-80px 0px -80% 0px" },
+    );
+    for (const link of tocLinks) {
+      const heading = document.getElementById(link.dataset.slug ?? "");
+      if (heading) observer.observe(heading);
+    }
+  }
+</script>

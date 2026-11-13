@@ -1,0 +1,46 @@
+---
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import type { Post } from "@/lib/posts";
+import {
+  breadcrumbList,
+  type Crumb,
+  collectionPage,
+} from "@/lib/structured-data";
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  /** h1 とページタイトル */
+  title: string;
+  description: string;
+  /** パンくずの Home の次から現在のページまで */
+  crumbs: Crumb[];
+  /** 構造化データ (CollectionPage) に載せる記事 */
+  posts: Post[];
+  noindex?: boolean;
+}
+
+const { title, description, crumbs, posts, noindex = false } = Astro.props;
+const allCrumbs: Crumb[] = [{ label: "Home", href: "/" }, ...crumbs];
+const path = Astro.url.pathname;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  noindex={noindex}
+  jsonLd={[
+    collectionPage(title, path, posts),
+    breadcrumbList(allCrumbs, path),
+  ]}
+>
+  <div class="max-w-3xl mx-auto px-6 lg:px-12 pt-6">
+    <Breadcrumbs crumbs={allCrumbs} />
+    <header class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-gray-900 dark:text-white">
+        {title}
+      </h1>
+      <slot name="lead" />
+    </header>
+    <slot />
+  </div>
+</BaseLayout>

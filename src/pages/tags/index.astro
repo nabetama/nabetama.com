@@ -1,0 +1,29 @@
+---
+import TagLink from "@/components/TagLink.astro";
+import ListLayout from "@/layouts/ListLayout.astro";
+import { getPosts, groupByTag } from "@/lib/posts";
+import { SITE } from "@/site.config";
+
+const posts = await getPosts();
+const tags = groupByTag(posts);
+---
+
+<ListLayout
+  title="Tags"
+  description={`${SITE.name} の記事をタグ (${tags.length}種類) から探せます。`}
+  crumbs={[{ label: "Tags" }]}
+  posts={[]}
+>
+  <p slot="lead" class="mt-2 text-sm text-gray-500 dark:text-darktheme-muted">
+    {tags.length} 個のタグ。数字はそのタグの記事数です。
+  </p>
+  <ul class="flex flex-wrap gap-2">
+    {
+      tags.map((tag) => (
+        <li>
+          <TagLink tag={tag.name} count={tag.posts.length} class="text-sm" />
+        </li>
+      ))
+    }
+  </ul>
+</ListLayout>

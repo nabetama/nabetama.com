@@ -1,0 +1,46 @@
+---
+import Icon from "@/components/Icon.astro";
+
+interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+const xShare = `https://x.com/intent/post?${new URLSearchParams({ text: title, url })}`;
+const hatenaShare = `https://b.hatena.ne.jp/entry/s/${url.replace(/^https?:\/\//, "")}`;
+const buttonClass =
+  "inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-darktheme-border text-gray-600 dark:text-gray-300 hover:border-gray-400 hover:text-gray-900 dark:hover:border-neutral-500 dark:hover:text-white transition-colors";
+---
+
+<div class="flex flex-wrap items-center gap-2">
+  <span class="text-xs text-gray-500 dark:text-darktheme-muted mr-1">シェア</span>
+  <a href={xShare} target="_blank" rel="noopener noreferrer" class={buttonClass}>
+    <Icon name="x" class="w-3.5 h-3.5" />
+    ポスト
+  </a>
+  <a href={hatenaShare} target="_blank" rel="noopener noreferrer" class={buttonClass}>
+    <span aria-hidden="true" class="font-bold leading-none">B!</span>
+    はてなブックマーク
+  </a>
+  <button type="button" class:list={[buttonClass, "copy-url"]} data-url={url}>
+    URL をコピー
+  </button>
+</div>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>(".copy-url")) {
+    button.addEventListener("click", async () => {
+      const label = button.textContent;
+      try {
+        await navigator.clipboard.writeText(button.dataset.url ?? location.href);
+        button.textContent = "コピーしました";
+      } catch {
+        button.textContent = "コピーできませんでした";
+      }
+      setTimeout(() => {
+        button.textContent = label;
+      }, 2000);
+    });
+  }
+</script>

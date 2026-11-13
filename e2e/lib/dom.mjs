@@ -24,6 +24,7 @@ export function isActuallyVisible(el) {
 /**
  * ページの UI 要素を列挙する。本文 (.prose) 内の要素は記事ごとに変わるため除外する。
  * 記事・タグ・見出しアンカーへのリンクは href を :slug / :tag / :anchor に正規化して 1 件にまとめる。
+ * 表示中のページの URL を含む外部リンク (シェアボタンなど) は、ページの URL を :page にしてまとめる。
  */
 export function collectUi() {
   const visible = window.__e2eIsVisible;
@@ -36,7 +37,18 @@ export function collectUi() {
   const normalizeHref = (href) => {
     if (href === "#") return { href: "#", kind: "anchor-top" };
     if (href.startsWith("#")) return { href: "#:anchor", kind: "anchor" };
-    if (/^https?:\/\//.test(href)) return { href, kind: "external" };
+    if (/^https?:\/\//.test(href)) {
+      // ローカルのプレビューではホストが本番と違うため、パスだけで判定する
+      const decoded = decodeURIComponent(href);
+      const at = decoded.indexOf(location.pathname);
+      if (location.pathname !== "/" && at >= 0) {
+        // クエリに入っている場合は ? の手前、パスに入っている場合はその手前までを前方一致で使う
+        const query = decoded.indexOf("?");
+        const prefix = decoded.slice(0, query >= 0 && query < at ? query : at);
+        return { href: `${prefix}:page`, kind: "share", prefix };
+      }
+      return { href, kind: "external" };
+    }
     if (/^\/posts\/[^/]+\/?$/.test(href) && href !== "/posts/") {
       return { href: "/posts/:slug/", kind: "dynamic", prefix: "/posts/" };
     }
@@ -76,7 +88,8 @@ export function collectUi() {
     if (tag === "a") {
       link = normalizeHref(el.getAttribute("href") || "");
       keyBody += `[href="${link.href}"]`;
-      if (link.kind === "dynamic") selector += `[href^="${q(link.prefix)}"]`;
+      if (link.kind === "dynamic" || link.kind === "share")
+        selector += `[href^="${q(link.prefix)}"]`;
       else if (link.kind === "anchor") selector += '[href^="#"]';
       else selector += `[href="${q(el.getAttribute("href") || "")}"]`;
     }

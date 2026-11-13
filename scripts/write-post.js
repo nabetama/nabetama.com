@@ -1,8 +1,9 @@
-import { writeFileSync } from "node:fs";
-import { format } from "date-fns";
+import { existsSync, writeFileSync } from "node:fs";
 
-console.log("Creating a new post...");
-const date = format(new Date(), "yyyy-MM-dd");
+// 記事のファイル名と date はサイトのタイムゾーン (Asia/Tokyo) の日付にする
+const date = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "Asia/Tokyo",
+}).format(new Date());
 
 const frontmatter = `---
 title: ""
@@ -14,7 +15,10 @@ tags: []
 
 `;
 
-const fileName = `${date}.mdx`;
-const filePath = `./src/content/posts/${fileName}`;
+const filePath = `./src/content/posts/${date}.mdx`;
+if (existsSync(filePath)) {
+  console.error(`Already exists: ${filePath}`);
+  process.exit(1);
+}
 writeFileSync(filePath, frontmatter);
 console.log(`Created a new post: ${filePath}`);

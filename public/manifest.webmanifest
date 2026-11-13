@@ -1,0 +1,13 @@
+{
+  "name": "nabetama.com",
+  "short_name": "nabetama",
+  "description": "購入したものや気になったものを紹介したり学んだことをメモするブログです。",
+  "lang": "ja",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

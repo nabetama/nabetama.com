@@ -37,5 +37,6 @@ nabetama.com (Astro の静的ブログ) で作業するエージェント (Claud
 | --- | --- |
 | `pnpm e2e` | ビルド → UI 変更検知 → E2E → `e2e-report/index.html` にレポート |
 | `pnpm e2e:check` | E2E テストの更新が必要な実装の変更を表示する |
+| `pnpm test` | `src/lib` の純粋な関数の単体テスト (`node --test`) |
 | `pnpm build` | `astro check` と `astro build` |
 | `pnpm check` | biome による format と lint |

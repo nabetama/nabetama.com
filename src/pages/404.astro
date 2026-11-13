@@ -1,35 +1,40 @@
 ---
+import Icon from "@/components/Icon.astro";
+import PostList from "@/components/PostList.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getPosts } from "@/lib/posts";
+
+const recent = (await getPosts()).slice(0, 5);
 ---
 
 <BaseLayout
   title="ページが見つかりません"
   description="お探しのページは存在しないか、移動した可能性があります。"
+  noindex
 >
-  <div class="max-w-5xl mx-auto px-6 lg:px-12 text-center py-20">
-    <h1 class="text-6xl font-bold text-gray-300 dark:text-gray-700 mb-4">
-      404
-    </h1>
-    <p class="text-xl text-gray-600 dark:text-darktheme-muted mb-8">
-      お探しのページは見つかりませんでした
-    </p>
-    <a
-      href="/"
-      class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:underline"
-    >
-      <svg
-        class="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
-      </svg>
-      トップページへ戻る
-    </a>
+  <div class="max-w-3xl mx-auto px-6 lg:px-12 py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-6xl font-bold text-gray-500 dark:text-gray-500 mb-4">404</h1>
+      <p class="text-xl text-gray-700 dark:text-darktheme-font mb-2">
+        お探しのページは見つかりませんでした
+      </p>
+      <p class="text-sm text-gray-500 dark:text-darktheme-muted mb-8">
+        URL が変わったか、ページが削除された可能性があります。
+      </p>
+      <div class="flex flex-wrap justify-center gap-6 text-sm">
+        <a href="/" class="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-300 hover:underline underline-offset-4">
+          <Icon name="arrow-left" />
+          トップページへ戻る
+        </a>
+        <a href="/posts/" class="text-indigo-600 dark:text-indigo-300 hover:underline underline-offset-4">記事一覧</a>
+        <a href="/tags/" class="text-indigo-600 dark:text-indigo-300 hover:underline underline-offset-4">タグ一覧</a>
+      </div>
+    </div>
+    <section aria-labelledby="recent-heading">
+      <h2 id="recent-heading" class="text-sm font-bold tracking-wider text-gray-500 dark:text-darktheme-muted mb-2">
+        最新の記事
+      </h2>
+      <PostList posts={recent} showDescription={false} />
+    </section>
   </div>
 </BaseLayout>

@@ -1,0 +1,43 @@
+---
+import { formatDate, isoDate } from "@/lib/date";
+import type { Post } from "@/lib/posts";
+import Icon from "./Icon.astro";
+import TagLink from "./TagLink.astro";
+
+interface Props {
+  post: Post;
+  headingLevel?: "h2" | "h3";
+}
+
+const { post, headingLevel: Heading = "h3" } = Astro.props;
+---
+
+<!-- カード全体をクリックできるよう、タイトルのリンクの ::before をカードいっぱいに広げる -->
+<article
+  class="blog-card relative h-full flex flex-col rounded-xl border border-gray-200 dark:border-darktheme-border bg-white dark:bg-darktheme-card p-5 transition-[box-shadow,border-color,transform] duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-gray-300 dark:hover:border-neutral-700 dark:hover:shadow-black/40 focus-within:border-indigo-400"
+>
+  <div class="flex items-center justify-between gap-2 mb-3 text-xs text-gray-500 dark:text-darktheme-muted">
+    <time datetime={isoDate(post.date)}>{formatDate(post.date)}</time>
+    <span class="inline-flex items-center gap-1" title="読了時間の目安">
+      <Icon name="clock" class="w-3.5 h-3.5" />
+      約{post.readingMinutes}分
+    </span>
+  </div>
+  <Heading class="text-base font-semibold leading-snug mb-2 text-gray-900 dark:text-white line-clamp-3">
+    <a href={post.href} class="before:absolute before:inset-0 before:rounded-xl focus-visible:outline-none">
+      {post.title}
+    </a>
+  </Heading>
+  <p class="text-sm leading-relaxed text-gray-600 dark:text-darktheme-muted line-clamp-3 mb-4">
+    {post.description}
+  </p>
+  {
+    post.tags.length > 0 && (
+      <div class="mt-auto flex flex-wrap gap-1.5">
+        {post.tags.map((tag) => (
+          <TagLink tag={tag} />
+        ))}
+      </div>
+    )
+  }
+</article>

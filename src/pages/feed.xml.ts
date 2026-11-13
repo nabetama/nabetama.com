@@ -1,25 +1,39 @@
-import { getCollection } from "astro:content";
 import rss from "@astrojs/rss";
 import type { APIContext } from "astro";
-import { compareDesc } from "date-fns";
+import { renderFeedContent } from "@/lib/feed-content";
+import { getPosts } from "@/lib/posts";
+import { SITE } from "@/site.config";
 
-const EXCLUDE_POST_ID = "1999-01-01";
+/** 本文全体をフィードに載せる記事数 (新しい順) */
+const FULL_CONTENT_LIMIT = 20;
 
 export async function GET(context: APIContext) {
-  const allPosts = await getCollection("posts");
-  const posts = allPosts
-    .filter((post) => post.id !== EXCLUDE_POST_ID)
-    .sort((a, b) => compareDesc(new Date(a.data.date), new Date(b.data.date)));
+  const posts = await getPosts();
+  const site = context.site ?? new URL(SITE.url);
+  const feedUrl = new URL("/feed.xml", site).toString();
+  const lastBuild = posts[0]?.date ?? new Date();
 
   return rss({
-    title: "nabetama.com",
-    description: "nabetama が日々の生活をメモするウェブサイト",
-    site: context.site ?? new URL("https://nabetama.com"),
-    items: posts.map((post) => ({
-      title: post.data.title,
-      pubDate: new Date(post.data.date),
-      description: post.data.description,
-      link: `/posts/${post.id}/`,
-    })),
+    title: SITE.name,
+    description: SITE.description,
+    site,
+    xmlns: { atom: "http://www.w3.org/2005/Atom" },
+    customData: [
+      `<language>${SITE.lang}</language>`,
+      `<atom:link href="${feedUrl}" rel="self" type="application/rss+xml"/>`,
+      `<lastBuildDate>${lastBuild.toUTCString()}</lastBuildDate>`,
+    ].join(""),
+    items: await Promise.all(
+      posts.map(async (post, i) => ({
+        title: post.title,
+        pubDate: post.date,
+        description: post.description,
+        // フィードが大きくなりすぎないよう、本文は新しい記事だけに付ける
+        content:
+          i < FULL_CONTENT_LIMIT ? await renderFeedContent(post) : undefined,
+        link: post.href,
+        categories: post.tags,
+      })),
+    ),
   });
 }
